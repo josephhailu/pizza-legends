@@ -8,7 +8,7 @@ class Overworld{
     /**
      * Draw to the canvas
      * 
-     * create a new image, assigna  source to that image
+     * create a new image, assign a  source to that image
      * when that image is downloaded, we copy the info to the canvas
      * 
      * the image is scaled via css
@@ -31,10 +31,10 @@ class Overworld{
                 0, // starting crop point for top
                 32,// width of crop to make
                 32, // height of crop to make
-                x*16-7, // x position
-                y*16-18,// y position
-                32, // image width (based on character size)
-                32 // image height (based on character size)
+                x*16-7, // x position, times tile size and shift for center of tile
+                y*16-18,// y position, times tile size and shift for center of tile
+                32, // image width (based on character size in sprite sheet)
+                32 // image height (based on character size in sprite sheet)
                 )
         };
         shadow.src = "/images/characters/shadow.png"
