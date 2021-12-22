@@ -17,6 +17,7 @@ class Overworld {
 
     startGameLoop() {
         const step = () => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (this.map) {
 
                 this.map.drawLowerImage(this.ctx);
@@ -27,7 +28,7 @@ class Overworld {
                 })
 
                 this.map.drawUpperImage(this.ctx);
-                
+
                 requestAnimationFrame(() => {
                     step();
                 });

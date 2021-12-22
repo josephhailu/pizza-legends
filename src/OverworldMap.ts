@@ -31,14 +31,14 @@ class OverworldMap {
 
 declare module 'my-overworldmaps-config' {
     global {
-        interface Window { OverworldMaps: any; }
+        interface Window { OverworldMaps: Record<string, any>; }
     }
 }
 
 window.OverworldMaps = {
     DemoRoom: {
-        lowerSrc: "images/maps/DemoLower.png",
-        upperSrc: "images/maps/DemoUpper.png",
+        lowerSrc: "./images/maps/DemoLower.png",
+        upperSrc: "./images/maps/DemoUpper.png",
         gameObjects: {
             hero: new GameObject({
                 x: 5,
@@ -52,8 +52,8 @@ window.OverworldMaps = {
         }
     },
     Kitchen: {
-        lowerSrc: "images/maps/KitchenLower.png",
-        upperSrc: "images/maps/KitchenUpper.png",
+        lowerSrc: "./images/maps/KitchenLower.png",
+        upperSrc: "./images/maps/KitchenUpper.png",
         gameObjects: {
             npcA: new GameObject({
                 x: 9,
