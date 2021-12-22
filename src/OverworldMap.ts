@@ -8,17 +8,17 @@ type OverworldMapConfig = {
 class OverworldMap {
     gameObjects: GameObject[];
     lowerImage: HTMLImageElement;
-    lowerSrc: string;
     upperImage: HTMLImageElement;
-    upperSrc: string;
     constructor(config: OverworldMapConfig) {
         this.gameObjects = config.gameObjects;
 
         this.lowerImage = new Image()
-        this.lowerSrc = config.lowerSrc;
+        this.lowerImage.src = config.lowerSrc;
+
 
         this.upperImage = new Image()
-        this.upperSrc = config.upperSrc;
+        this.upperImage.src = config.upperSrc;
+
     }
 
     drawLowerImage(ctx: CanvasRenderingContext2D) {
