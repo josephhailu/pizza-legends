@@ -9,6 +9,7 @@ class Overworld {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     map?: OverworldMap = undefined;
+    directionInput?: DirectionInput;
     constructor(config: OverworldConfig) {
         this.element = config.element
         this.canvas = this.element.querySelector(".game-canvas")!;
@@ -24,6 +25,13 @@ class Overworld {
 
                 //draw game objects
                 Object.values(this.map.gameObjects).forEach(gameObject => {
+                    if (gameObject instanceof Person) {
+                        gameObject.update({
+                            arrow: this.directionInput!.direction
+                        });
+                    } else {
+                        gameObject.update();
+                    }
                     gameObject.sprite.draw(this.ctx);
                 })
 
@@ -48,6 +56,9 @@ class Overworld {
      */
     init() {
         this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
+        this.directionInput = new DirectionInput();
+        this.directionInput.init();
+
         this.startGameLoop();
 
     }
