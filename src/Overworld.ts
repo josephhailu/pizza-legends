@@ -17,10 +17,21 @@ class Overworld {
 
     startGameLoop() {
         const step = () => {
-            console.log("stepping")
-            requestAnimationFrame(() => {
-                step();
-            });
+            if (this.map) {
+
+                this.map.drawLowerImage(this.ctx);
+
+                //draw game objects
+                Object.values(this.map.gameObjects).forEach(gameObject => {
+                    gameObject.sprite.draw(this.ctx);
+                })
+
+                this.map.drawUpperImage(this.ctx);
+                
+                requestAnimationFrame(() => {
+                    step();
+                });
+            }
         }
 
         step();
@@ -36,6 +47,7 @@ class Overworld {
      */
     init() {
         this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
+
         this.startGameLoop();
 
     }
