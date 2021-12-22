@@ -7,7 +7,7 @@ type GameObjectConfig = {
 class GameObject {
     y: number
     x: number
-    sprite: any;
+    sprite: Sprite;
     constructor(config: GameObjectConfig) {
         this.x = config.x || 0;
         this.y = config.y || 0;
