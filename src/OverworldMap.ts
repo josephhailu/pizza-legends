@@ -1,5 +1,3 @@
-
-
 type OverworldMapConfig = {
     gameObjects: GameObject[];
     lowerImage: HTMLImageElement;
@@ -31,9 +29,10 @@ class OverworldMap {
     }
 }
 
-export { };
-declare global {
-    interface Window { OverworldMaps: any; }
+declare module 'my-overworldmaps-config' {
+    global {
+        interface Window { OverworldMaps: any; }
+    }
 }
 
 window.OverworldMaps = {
