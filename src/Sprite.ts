@@ -52,8 +52,8 @@ class Sprite {
 
     draw(ctx: CanvasRenderingContext2D) {
         // x/y position times tile size and shift for center of tile
-        const x = this.gameObject.x * 16 - 7;
-        const y = this.gameObject.y * 16 - 18;
+        const x = this.gameObject.x - 7;
+        const y = this.gameObject.y - 18;
 
         this.isShadowLoaded &&
             ctx.drawImage(
