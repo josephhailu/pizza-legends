@@ -14,6 +14,17 @@ class Overworld {
         this.ctx = this.canvas.getContext("2d")!;
     }
 
+    startGameLoop() {
+        const step = () => {
+            console.log("stepping")
+            requestAnimationFrame(() => {
+                step();
+            });
+        }
+
+        step();
+    }
+
     /**
      * Draw to the canvas
      * 
@@ -23,6 +34,8 @@ class Overworld {
      * the image is scaled via css
      */
     init() {
+        this.startGameLoop();
+
         const image = new Image();
         image.onload = () => {
             this.ctx.drawImage(image, 0, 0)
@@ -45,5 +58,7 @@ class Overworld {
             hero.sprite.draw(this.ctx)
             npc1.sprite.draw(this.ctx)
         }, 200);
+
     }
+
 }
