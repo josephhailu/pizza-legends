@@ -51,9 +51,9 @@ class Sprite {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
+        // x/y position times tile size and shift for center of tile
         const x = this.gameObject.x * 16 - 7;
         const y = this.gameObject.y * 16 - 18;
-
 
         this.isShadowLoaded &&
             ctx.drawImage(
@@ -66,7 +66,7 @@ class Sprite {
                 this.image,
                 0, 0, // starting crop point for top/left
                 32, 32, // width/height of crop to make
-                x, y, // x/y position, times tile size and shift for center of  tile
+                x, y,
                 32, 32 // image width/height (based on character size in sprite sheet)
             )
     }
