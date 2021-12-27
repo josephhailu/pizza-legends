@@ -1,29 +1,27 @@
 *,
 *::after,
 *::before {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    background-color: #333;
-    overflow: hidden;
+  background-color: #333;
+  overflow: hidden;
 }
 
 .game-container {
-    position: relative;
-    margin: 20px auto 0 auto;
-    outline: 1px solid white;
-    width: 352px;
-    height: 198px;
+  position: relative;
+  margin: 20px auto 0 auto;
+  outline: 1px solid white;
+  width: 352px;
+  height: 198px;
 
-    /*scale assets, push image down to compensate*/
-    transform: scale(3) translateY(50%);
-
+  /*scale assets, push image down to compensate*/
+  transform: scale(3) translateY(50%);
 }
 
-
 .game-container canvas {
-    image-rendering: pixelated;
+  image-rendering: pixelated;
 }
