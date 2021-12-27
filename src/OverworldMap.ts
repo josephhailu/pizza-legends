@@ -1,12 +1,12 @@
 type OverworldMapConfig = {
-    gameObjects: Record<any,GameObject>;
+    gameObjects: Record<string,GameObject>;
     lowerImage: HTMLImageElement;
     lowerSrc: string;
     upperImage: HTMLImageElement;
     upperSrc: string;
 }
 class OverworldMap {
-    gameObjects: Record<any,GameObject>;
+    gameObjects: Record<string,GameObject>;
     lowerImage: HTMLImageElement;
     upperImage: HTMLImageElement;
     constructor(config: OverworldMapConfig) {
@@ -23,14 +23,14 @@ class OverworldMap {
 
     drawLowerImage(ctx: CanvasRenderingContext2D, cameraPerson:GameObject) {
         ctx.drawImage(this.lowerImage,
-             UTILS.withGrid(10.5) - cameraPerson.x, 
-             UTILS.withGrid(6) - cameraPerson.y
+             UTILS.withGrid(UTILS.cameraPersonOffset.x) - cameraPerson.x, 
+             UTILS.withGrid(UTILS.cameraPersonOffset.y) - cameraPerson.y
         )
     }
     drawUpperImage(ctx: CanvasRenderingContext2D, cameraPerson:GameObject) {
         ctx.drawImage(this.upperImage,
-            UTILS.withGrid(10.5) - cameraPerson.x, 
-            UTILS.withGrid(6) - cameraPerson.y
+            UTILS.withGrid(UTILS.cameraPersonOffset.x) - cameraPerson.x, 
+            UTILS.withGrid(UTILS.cameraPersonOffset.y) - cameraPerson.y
        )
     }
 }
