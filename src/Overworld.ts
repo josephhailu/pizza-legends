@@ -1,66 +1,68 @@
 type OverworldConfig = {
-    element: HTMLElement;
-
-}
-
+  element: HTMLElement;
+};
 
 class Overworld {
-    element: HTMLElement;
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
-    map?: OverworldMap = undefined;
-    directionInput?: DirectionInput;
-    constructor(config: OverworldConfig) {
-        this.element = config.element
-        this.canvas = this.element.querySelector(".game-canvas")!;
-        this.ctx = this.canvas.getContext("2d")!;
-    }
+  element: HTMLElement;
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  map?: OverworldMap = undefined;
+  directionInput?: DirectionInput;
+  constructor(config: OverworldConfig) {
+    this.element = config.element;
+    this.canvas = this.element.querySelector(".game-canvas")!;
+    this.ctx = this.canvas.getContext("2d")!;
+  }
 
-    startGameLoop() {
-        const step = () => {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            if (this.map) {
+  startGameLoop() {
+    const step = () => {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      if (this.map) {
+        // establish camera person
+        const cameraPerson = this.map.gameObjects.hero;
 
-                this.map.drawLowerImage(this.ctx);
+        //update game objects
+        Object.values(this.map.gameObjects).forEach((gameObject) => {
+          if (gameObject instanceof Person) {
+            gameObject.update({
+              arrow: this.directionInput!.direction,
+            });
+          } else {
+            gameObject.update();
+          }
+        });
 
-                //draw game objects
-                Object.values(this.map.gameObjects).forEach(gameObject => {
-                    if (gameObject instanceof Person) {
-                        gameObject.update({
-                            arrow: this.directionInput!.direction
-                        });
-                    } else {
-                        gameObject.update();
-                    }
-                    gameObject.sprite.draw(this.ctx);
-                })
+        this.map.drawLowerImage(this.ctx, cameraPerson);
 
-                this.map.drawUpperImage(this.ctx);
+        //draw game objects
+        Object.values(this.map.gameObjects).forEach((gameObject) => {
+          gameObject.sprite.draw(this.ctx, cameraPerson);
+        });
 
-                requestAnimationFrame(() => {
-                    step();
-                });
-            }
-        }
+        this.map.drawUpperImage(this.ctx, cameraPerson);
 
-        step();
-    }
+        requestAnimationFrame(() => {
+          step();
+        });
+      }
+    };
 
-    /**
-     * Draw to the canvas
-     * 
-     * create a new image, assign a  source to that image
-     * when that image is downloaded, we copy the info to the canvas
-     * 
-     * the image is scaled via css
-     */
-    init() {
-        this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
-        this.directionInput = new DirectionInput();
-        this.directionInput.init();
+    step();
+  }
 
-        this.startGameLoop();
+  /**
+   * Draw to the canvas
+   *
+   * create a new image, assign a  source to that image
+   * when that image is downloaded, we copy the info to the canvas
+   *
+   * the image is scaled via css
+   */
+  init() {
+    this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
+    this.directionInput = new DirectionInput();
+    this.directionInput.init();
 
-    }
-
+    this.startGameLoop();
+  }
 }
