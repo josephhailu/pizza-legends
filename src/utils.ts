@@ -38,6 +38,25 @@ const UTILS = {
   withGrid: (n: number) => {
     return n * DIMENSIONS.gridSize;
   },
+  asGridCoord(x: number, y: number) {
+    return `${x * DIMENSIONS.gridSize},${y * DIMENSIONS.gridSize}`;
+  },
+  nextPosition(initialX: number, initialY: number, direction: Directions) {
+    let x = initialX;
+    let y = initialY;
+    const size = DIMENSIONS.gridSize;
+    if (direction === "left") {
+      x -= size;
+    } else if (direction === "right") {
+      x += size;
+    } else if (direction === "up") {
+      y -= size;
+    } else if (direction === "down") {
+      y += size;
+    }
+
+    return {x, y};
+  },
 };
 
 const ANIMATIONS = {

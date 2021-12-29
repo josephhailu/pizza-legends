@@ -6,7 +6,10 @@ type DirectionUpdate = {
   [key in Directions]: [property: "x" | "y", change: -1 | 1];
 };
 
-type SpriteUpdateState = {arrow: Directions};
+type SpriteUpdateState = {
+  arrow: Directions;
+  map: OverworldMap;
+};
 
 class Person extends GameObject {
   movingProgressRemaining: number;
@@ -26,18 +29,35 @@ class Person extends GameObject {
 
   update(state?: SpriteUpdateState) {
     if (state) {
-      this.updatePosition();
-      this.updateSprite(state);
-      if (
-        this.isPlayerControlled &&
-        this.movingProgressRemaining === 0 &&
-        state.arrow
-      ) {
-        this.direction = state.arrow;
-        this.movingProgressRemaining = 16;
+      if (this.movingProgressRemaining > 0) {
+        this.updatePosition();
+      } else {
+        if (this.isPlayerControlled && state.arrow) {
+          this.startBehaviour(state, {
+            type: "walk",
+            direction: state.arrow,
+          });
+        }
+        this.updateSprite();
       }
     } else {
       super.update();
+    }
+  }
+
+  startBehaviour(
+    state: SpriteUpdateState,
+    behaviour: {type: string; direction: Directions}
+  ) {
+    this.direction = behaviour.direction;
+    if (behaviour.type === "walk") {
+      if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
+        return;
+      }
+
+      //move hero collision wall with character
+      state.map.moveWall(this.x, this.y, this.direction);
+      this.movingProgressRemaining = 16;
     }
   }
 
@@ -49,17 +69,11 @@ class Person extends GameObject {
     }
   }
 
-  updateSprite(state: SpriteUpdateState) {
-    if (
-      this.isPlayerControlled &&
-      this.movingProgressRemaining === 0 &&
-      !state.arrow
-    ) {
-      this.sprite.setAnimation("idle-" + this.direction);
-      return;
-    }
+  updateSprite() {
     if (this.movingProgressRemaining > 0) {
       this.sprite.setAnimation("walk-" + this.direction);
+      return;
     }
+    this.sprite.setAnimation("idle-" + this.direction);
   }
 }
