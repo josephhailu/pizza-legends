@@ -43,7 +43,7 @@ const UTILS = {
   },
   nextPosition(initialX: number, initialY: number, direction: Directions) {
     let x = initialX;
-    let y = initialX;
+    let y = initialY;
     const size = DIMENSIONS.gridSize;
     if (direction === "left") {
       x -= size;

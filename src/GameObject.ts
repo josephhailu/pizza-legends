@@ -11,18 +11,24 @@ type GameObjectConfig = {
 class GameObject {
   y: number;
   x: number;
+  isMounted: boolean;
   sprite: Sprite;
   direction: "up" | "down" | "left" | "right";
   constructor(config: GameObjectConfig) {
     this.x = config.x || 0;
     this.y = config.y || 0;
+    this.isMounted = false;
     this.direction = config.direction || "down";
     this.sprite = new Sprite({
       gameObject: this,
       src: config.src || "./images/characters/people/hero.png",
       useShadow: true,
-      animation: config.animation
+      animation: config.animation,
     });
   }
-  update() { }
+  mount(map: OverworldMap) {
+    this.isMounted = true;
+    map.addWall(this.x, this.y);
+  }
+  update() {}
 }
