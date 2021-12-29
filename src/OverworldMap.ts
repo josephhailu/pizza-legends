@@ -58,6 +58,23 @@ window.OverworldMaps = {
         y: UTILS.withGrid(9),
         src: "./images/characters/people/npc1.png",
       }),
+      npc2: new Person({
+        x: UTILS.withGrid(4),
+        y: UTILS.withGrid(6),
+        src: "./images/characters/people/uhh.png",
+      }),
+      me: new Person({
+        x: UTILS.withGrid(10),
+        y: UTILS.withGrid(6),
+        src: "./images/characters/people/me.png",
+        animation: ANIMATIONS.singleFrame,
+      }),
+      me2: new Person({
+        x: UTILS.withGrid(6),
+        y: UTILS.withGrid(8),
+        src: "./images/characters/people/me2.png",
+        animation: ANIMATIONS.singleFrame,
+      }),
     },
   },
   Kitchen: {

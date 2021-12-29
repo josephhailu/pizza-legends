@@ -1,8 +1,11 @@
 type GameObjectConfig = {
   x: number;
   y: number;
-  direction?: "up" | "down" | "left" | "right";
+  direction?: Directions;
   src?: string;
+  animation?: {
+    [key: string]: number[][];
+  };
 };
 
 class GameObject {
@@ -18,7 +21,8 @@ class GameObject {
       gameObject: this,
       src: config.src || "./images/characters/people/hero.png",
       useShadow: true,
+      animation: config.animation
     });
   }
-  update() {}
+  update() { }
 }
