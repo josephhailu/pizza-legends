@@ -5,6 +5,9 @@ type Directions = "up" | "down" | "left" | "right";
 type DirectionUpdate = {
   [key in Directions]: [property: "x" | "y", change: -1 | 1];
 };
+
+type SpriteUpdateState = {arrow: Directions};
+
 class Person extends GameObject {
   movingProgressRemaining: number;
   directionUpdate: DirectionUpdate;
@@ -21,7 +24,7 @@ class Person extends GameObject {
     };
   }
 
-  update(state?: {arrow: Directions}) {
+  update(state?: SpriteUpdateState) {
     if (state) {
       this.updatePosition();
       this.updateSprite(state);
@@ -46,7 +49,7 @@ class Person extends GameObject {
     }
   }
 
-  updateSprite(state: Record<string, any>) {
+  updateSprite(state: SpriteUpdateState) {
     if (
       this.isPlayerControlled &&
       this.movingProgressRemaining === 0 &&

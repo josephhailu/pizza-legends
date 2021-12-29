@@ -44,37 +44,7 @@ class Sprite {
     };
 
     // animation and initital state
-    this.animation = config.animation || {
-      "idle-down": [[0, 0]],
-      "idle-right": [[0, 1]],
-      "idle-up": [[0, 2]],
-      "idle-left": [[0, 3]],
-
-      "walk-down": [
-        [1, 0],
-        [0, 0],
-        [3, 0],
-        [0, 0],
-      ],
-      "walk-right": [
-        [1, 1],
-        [0, 1],
-        [3, 1],
-        [0, 1],
-      ],
-      "walk-up": [
-        [1, 2],
-        [0, 2],
-        [3, 2],
-        [0, 2],
-      ],
-      "walk-left": [
-        [1, 3],
-        [0, 3],
-        [3, 3],
-        [0, 3],
-      ],
-    };
+    this.animation = config.animation || ANIMATIONS.defaultAnimation;
     this.currentAnimation = config.currentAnimation || "idle-down";
     this.currentAnimationFrame = 0;
 
@@ -102,7 +72,7 @@ class Sprite {
       this.animationFrameProgress -= 1;
       return;
     }
-    //reset counter
+    // reset counter
     this.animationFrameProgress = this.animationFrameLimit;
     this.currentAnimationFrame += 1;
     if (this.frame === undefined) {
