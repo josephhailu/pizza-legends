@@ -6,7 +6,10 @@ type DirectionUpdate = {
   [key in Directions]: [property: "x" | "y", change: -1 | 1];
 };
 
-type SpriteUpdateState = {arrow: Directions};
+type SpriteUpdateState = {
+  arrow: Directions;
+  map: OverworldMap;
+};
 
 class Person extends GameObject {
   movingProgressRemaining: number;
@@ -34,6 +37,7 @@ class Person extends GameObject {
         state.arrow
       ) {
         this.direction = state.arrow;
+        state.map.isSpaceTaken(this.x, this.y, this.direction);
         this.movingProgressRemaining = 16;
       }
     } else {

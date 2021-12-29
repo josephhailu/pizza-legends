@@ -4,13 +4,17 @@ type OverworldMapConfig = {
   lowerSrc: string;
   upperImage: HTMLImageElement;
   upperSrc: string;
+  walls?: Record<string, {}>;
 };
 class OverworldMap {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   upperImage: HTMLImageElement;
+  walls: Record<string, {}>;
+
   constructor(config: OverworldMapConfig) {
     this.gameObjects = config.gameObjects;
+    this.walls = config.walls || {};
 
     this.lowerImage = new Image();
     this.lowerImage.src = config.lowerSrc;
@@ -32,6 +36,10 @@ class OverworldMap {
       UTILS.withGrid(UTILS.cameraPersonOffset.x) - cameraPerson.x,
       UTILS.withGrid(UTILS.cameraPersonOffset.y) - cameraPerson.y
     );
+  }
+  isSpaceTaken(currentX: number, currentY: number, direction: Directions) {
+    const {x, y} = UTILS.nextPosition(currentX, currentY, direction);
+    return this.walls[`${x},${y}`] || false;
   }
 }
 
@@ -75,6 +83,12 @@ window.OverworldMaps = {
         src: "./images/characters/people/me2.png",
         animation: ANIMATIONS.singleFrame,
       }),
+    },
+    walls: {
+      [UTILS.asGridCoord(7, 6)]: true, // "16,16":true
+      [UTILS.asGridCoord(8, 6)]: true,
+      [UTILS.asGridCoord(7, 7)]: true,
+      [UTILS.asGridCoord(8, 7)]: true,
     },
   },
   Kitchen: {

@@ -26,6 +26,7 @@ class Overworld {
           if (gameObject instanceof Person) {
             gameObject.update({
               arrow: this.directionInput!.direction,
+              map: this.map!,
             });
           } else {
             gameObject.update();
