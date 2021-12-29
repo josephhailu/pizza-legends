@@ -1,16 +1,20 @@
+type Walls = {
+  [coordinateString: string]: boolean;
+};
+
 type OverworldMapConfig = {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   lowerSrc: string;
   upperImage: HTMLImageElement;
   upperSrc: string;
-  walls?: Record<string, {}>;
+  walls?: Walls;
 };
 class OverworldMap {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   upperImage: HTMLImageElement;
-  walls: Record<string, {}>;
+  walls: Walls;
 
   constructor(config: OverworldMapConfig) {
     this.gameObjects = config.gameObjects;
