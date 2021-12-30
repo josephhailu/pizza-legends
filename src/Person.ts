@@ -7,8 +7,8 @@ type DirectionUpdate = {
 };
 
 type SpriteUpdateState = {
-  arrow: Directions;
   map: OverworldMap;
+  arrow?: Directions;
 };
 
 class Person extends GameObject {
@@ -45,10 +45,7 @@ class Person extends GameObject {
     }
   }
 
-  startBehaviour(
-    state: SpriteUpdateState,
-    behaviour: {type: string; direction: Directions}
-  ) {
+  startBehaviour(state: SpriteUpdateState, behaviour: Behaviour) {
     this.direction = behaviour.direction;
     if (behaviour.type === "walk") {
       if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
@@ -58,6 +55,12 @@ class Person extends GameObject {
       //move hero collision wall with character
       state.map.moveWall(this.x, this.y, this.direction);
       this.movingProgressRemaining = 16;
+      this.updateSprite();
+    }
+    if (behaviour.type === "stand") {
+      setTimeout(() => {
+        UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, { whoId: this.id });
+      }, behaviour.time!);
     }
   }
 
@@ -66,6 +69,11 @@ class Person extends GameObject {
       const [property, change] = this.directionUpdate[this.direction];
       this[property] += change;
       this.movingProgressRemaining -= 1;
+    }
+
+    if (this.movingProgressRemaining == 0) {
+      // emit done moving signal
+      UTILS.emitEvent(CUSTOM_EVENTS.PersonWalkComplete, { whoId: this.id });
     }
   }
 
