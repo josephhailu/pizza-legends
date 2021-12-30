@@ -4,6 +4,7 @@ type Behaviour = {
   direction: Directions;
   time?: number;
   who?: string | null;
+  retry?: boolean;
 };
 
 type GameObjectConfig = {

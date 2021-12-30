@@ -49,6 +49,10 @@ class Person extends GameObject {
     this.direction = behaviour.direction;
     if (behaviour.type === "walk") {
       if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
+        behaviour.retry &&
+          setTimeout(() => {
+            this.startBehaviour(state, behaviour);
+          }, 10);
         return;
       }
 
