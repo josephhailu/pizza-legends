@@ -59,6 +59,18 @@ class OverworldMap {
     });
   }
 
+  async startCutScene(events: Behaviour[]) {
+    this.isCutScenePlaying = true;
+    for (let i = 0; i < events.length; i++) {
+      const eventHandler = new OverworldEvent({
+        event: events[i],
+        map: this,
+      });
+      await eventHandler.init();
+    }
+    this.isCutScenePlaying = false;
+  }
+
   addWall(x: number, y: number) {
     this.walls[`${x},${y}`] = true;
   }
