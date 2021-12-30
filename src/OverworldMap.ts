@@ -1,16 +1,21 @@
+type Walls = {
+  [coordinateString: string]: boolean;
+};
+
 type OverworldMapConfig = {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   lowerSrc: string;
   upperImage: HTMLImageElement;
   upperSrc: string;
-  walls?: Record<string, {}>;
+  walls?: Walls;
 };
 class OverworldMap {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   upperImage: HTMLImageElement;
-  walls: Record<string, {}>;
+  walls: Walls;
+  isCutScenePlaying: boolean;
 
   constructor(config: OverworldMapConfig) {
     this.gameObjects = config.gameObjects;
@@ -21,6 +26,8 @@ class OverworldMap {
 
     this.upperImage = new Image();
     this.upperImage.src = config.upperSrc;
+
+    this.isCutScenePlaying = false;
   }
 
   drawLowerImage(ctx: CanvasRenderingContext2D, cameraPerson: GameObject) {
@@ -38,15 +45,30 @@ class OverworldMap {
     );
   }
   isSpaceTaken(currentX: number, currentY: number, direction: Directions) {
-    const {x, y} = UTILS.nextPosition(currentX, currentY, direction);
+    const { x, y } = UTILS.nextPosition(currentX, currentY, direction);
     return this.walls[`${x},${y}`] || false;
   }
 
   mountObjects() {
-    Object.values(this.gameObjects).forEach((gameObject) => {
+    Object.keys(this.gameObjects).forEach((gameObjectKey) => {
       //TODO: determine if we should mount
+      let gameObject = this.gameObjects[gameObjectKey];
+      gameObject.id = gameObjectKey;
+
       gameObject.mount(this);
     });
+  }
+
+  async startCutScene(events: Behaviour[]) {
+    this.isCutScenePlaying = true;
+    for (let i = 0; i < events.length; i++) {
+      const eventHandler = new OverworldEvent({
+        event: events[i],
+        map: this,
+      });
+      await eventHandler.init();
+    }
+    this.isCutScenePlaying = false;
   }
 
   addWall(x: number, y: number) {
@@ -57,7 +79,7 @@ class OverworldMap {
   }
   moveWall(wasX: number, wasY: number, direction: Directions) {
     this.removeWall(wasX, wasY);
-    const {x, y} = UTILS.nextPosition(wasX, wasY, direction);
+    const { x, y } = UTILS.nextPosition(wasX, wasY, direction);
     this.addWall(x, y);
   }
 }
@@ -84,16 +106,29 @@ window.OverworldMaps = {
         x: UTILS.withGrid(7),
         y: UTILS.withGrid(9),
         src: "./images/characters/people/npc1.png",
+        behaviourLoop: [
+          { type: "stand", direction: "down", time: 800 },
+          { type: "stand", direction: "up", time: 800 },
+          { type: "stand", direction: "right", time: 1200 },
+          { type: "stand", direction: "up", time: 300 },
+        ],
       }),
       npc2: new Person({
         x: UTILS.withGrid(4),
         y: UTILS.withGrid(6),
-        src: "./images/characters/people/uhh.png",
+        src: "./images/characters/people/me.png",
+        behaviourLoop: [
+          { type: "walk", direction: "left" },
+          { type: "walk", direction: "up" },
+          { type: "walk", direction: "right" },
+          { type: "walk", direction: "down" },
+        ],
+        animation: ANIMATIONS.singleFrame,
       }),
       me: new Person({
-        x: UTILS.withGrid(10),
-        y: UTILS.withGrid(6),
-        src: "./images/characters/people/me.png",
+        x: UTILS.withGrid(9),
+        y: UTILS.withGrid(7),
+        src: "./images/characters/people/uhh.png",
         animation: ANIMATIONS.singleFrame,
       }),
       me2: new Person({

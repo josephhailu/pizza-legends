@@ -4,7 +4,7 @@ const DIMENSIONS = {
   /**Dimensions for different types of sprite designs*/
   spriteSize: {
     /**A person sprite is 32x32 px */
-    person: {width: 32, height: 32},
+    person: { width: 32, height: 32 },
   },
   /** The canvas dimensions are based on designing map assets
    * using 22 horizontal cells and 13 vertical cells.
@@ -55,7 +55,14 @@ const UTILS = {
       y += size;
     }
 
-    return {x, y};
+    return { x, y };
+  },
+
+  emitEvent(name: string, detail: any) {
+    const event = new CustomEvent(name, {
+      detail,
+    });
+    document.dispatchEvent(event);
   },
 };
 
