@@ -1,3 +1,13 @@
+:root {
+  --border-color: #123123;
+  --dialog-background: #345212;
+
+  --menu-background: #abcdef;
+  --menu-border-color: #abcdef;
+  --menu-font-color: #abcdef;
+  --menu-selected-background: #abcdef;
+}
+
 *,
 *::after,
 *::before {
