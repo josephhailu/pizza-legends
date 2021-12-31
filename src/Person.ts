@@ -13,6 +13,7 @@ type SpriteUpdateState = {
 
 class Person extends GameObject {
   movingProgressRemaining: number;
+  isStanding = false;
   directionUpdate: DirectionUpdate;
   isPlayerControlled: boolean;
   constructor(config: PersonConfig) {
@@ -66,9 +67,11 @@ class Person extends GameObject {
       this.updateSprite();
     }
     if (behaviour.type === "stand") {
+      this.isStanding = true;
       setTimeout(() => {
         UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, { whoId: this.id });
       }, behaviour.time!);
+      this.isStanding = false;
     }
   }
 

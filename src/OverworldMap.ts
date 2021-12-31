@@ -68,7 +68,17 @@ class OverworldMap {
       });
       await eventHandler.init();
     }
+
     this.isCutScenePlaying = false;
+
+    //reset gameobjects, and do behaviour
+    Object.values(this.gameObjects).forEach((gameObject) => {
+      if (gameObject instanceof Person) {
+        gameObject.doBehaviourEvent(this, gameObject.isStanding);
+      } else {
+        gameObject.doBehaviourEvent(this);
+      }
+    });
   }
 
   addWall(x: number, y: number) {

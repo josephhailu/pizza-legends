@@ -62,8 +62,12 @@ class GameObject {
    * @param map map that holds game object references
    * @returns Promise<void>
    */
-  async doBehaviourEvent(map: OverworldMap) {
-    if (map.isCutScenePlaying || this.behaviourLoop.length === 0) {
+  async doBehaviourEvent(map: OverworldMap, exitCondition = false) {
+    if (
+      map.isCutScenePlaying ||
+      this.behaviourLoop.length === 0 ||
+      exitCondition
+    ) {
       return;
     }
 
