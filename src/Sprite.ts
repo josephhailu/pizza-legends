@@ -18,7 +18,7 @@ class Sprite {
   currentAnimationFrame: number;
   image: HTMLImageElement;
   isLoaded: boolean = false;
-  gameObject: any;
+  gameObject: GameObject;
   shadow: HTMLImageElement;
   useShadow: boolean;
   isShadowLoaded: boolean = false;
