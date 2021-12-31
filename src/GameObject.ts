@@ -1,10 +1,11 @@
-type EventTypes = "walk" | "stand";
+type EventTypes = "walk" | "stand" | "textMessage";
 type Behaviour = {
   type: EventTypes;
-  direction: Directions;
+  direction?: Directions;
   time?: number;
   who?: string | null;
   retry?: boolean;
+  text?: string;
 };
 
 type GameObjectConfig = {
@@ -23,7 +24,7 @@ class GameObject {
   x: number;
   isMounted: boolean;
   sprite: Sprite;
-  direction: "up" | "down" | "left" | "right";
+  direction: Directions;
   id: string | null;
   behaviourLoop: Behaviour[];
   behaviourLoopIndex: number;

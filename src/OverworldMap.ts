@@ -123,7 +123,7 @@ window.OverworldMaps = {
           { type: "stand", direction: "up", time: 300 },
         ],
       }),
-      npc2: new Person({
+      me: new Person({
         x: UTILS.withGrid(4),
         y: UTILS.withGrid(6),
         src: "./images/characters/people/me.png",
@@ -135,13 +135,13 @@ window.OverworldMaps = {
         ],
         animation: ANIMATIONS.singleFrame,
       }),
-      me: new Person({
+      houseGuy: new Person({
         x: UTILS.withGrid(9),
         y: UTILS.withGrid(7),
         src: "./images/characters/people/uhh.png",
         animation: ANIMATIONS.singleFrame,
       }),
-      me2: new Person({
+      gingerbread: new Person({
         x: UTILS.withGrid(6),
         y: UTILS.withGrid(8),
         src: "./images/characters/people/me2.png",

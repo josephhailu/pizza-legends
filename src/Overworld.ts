@@ -76,10 +76,16 @@ class Overworld {
 
     this.startGameLoop();
     this.map.startCutScene([
-      {who: "hero", type: "walk", direction: "down"},
-      {who: "me", type: "walk", direction: "up"},
-      {who: "hero", type: "walk", direction: "down"},
-      {who: "npc1", type: "walk", direction: "up", time: 300},
+      { who: "hero", type: "walk", direction: "down" },
+      { who: "houseGuy", type: "walk", direction: "up" },
+      { who: "hero", type: "walk", direction: "down" },
+      { who: "npc1", type: "walk", direction: "up", time: 300 },
+      { who: "me", type: "walk", direction: "down" },
+      { who: "me", type: "walk", direction: "down" },
+      { who: "me", type: "walk", direction: "down" },
+      { who: "me", type: "walk", direction: "right" },
+
+      { type: "textMessage", text: "Hi!" },
     ]);
   }
 }

@@ -93,6 +93,13 @@ class OverworldEvent {
     }
   }
 
+  textMessage(resolve: (value: unknown) => void) {
+    const message = new TextMessage({
+      text: this.event.text!,
+      onComplete: () => resolve(true),
+    });
+    message.init(document.querySelector(".game-container")!);
+  }
   init() {
     return new Promise((resolve) => {
       this[this.event.type](resolve);

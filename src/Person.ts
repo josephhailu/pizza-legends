@@ -51,7 +51,7 @@ class Person extends GameObject {
   }
 
   startBehaviour(state: SpriteUpdateState, behaviour: Behaviour) {
-    this.direction = behaviour.direction;
+    this.direction = behaviour.direction!;
     if (behaviour.type === "walk") {
       if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
         behaviour.retry &&

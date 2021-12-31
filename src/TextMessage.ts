@@ -20,6 +20,14 @@ class TextMessage {
       <p class ="TextMessage_p">${this.text}</p>
       <button class ="TextMessage_button">Next</button
       `;
+
+    this.element.querySelector("button")!.addEventListener("click", () => {
+      this.done();
+    });
+  }
+  done() {
+    this.element?.remove();
+    this.onComplete();
   }
 
   init(container: HTMLElement) {
