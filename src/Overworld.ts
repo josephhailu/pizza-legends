@@ -8,8 +8,7 @@ class Overworld {
   ctx: CanvasRenderingContext2D;
   map?: OverworldMap = undefined;
   directionInput?: DirectionInput;
-  FPS = 60;
-  prevTick = 0;
+
   constructor(config: OverworldConfig) {
     this.element = config.element;
     this.canvas = this.element.querySelector(".game-canvas")!;
@@ -21,11 +20,6 @@ class Overworld {
       requestAnimationFrame(() => {
         step();
       });
-
-      // clamp to fixed framerate
-      let now = Math.round((this.FPS * Date.now()) / 1000);
-      if (now == this.prevTick) return;
-      this.prevTick = now;
 
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       if (this.map) {
@@ -76,16 +70,16 @@ class Overworld {
 
     this.startGameLoop();
     this.map.startCutScene([
-      { who: "hero", type: "walk", direction: "down" },
-      { who: "houseGuy", type: "walk", direction: "up" },
-      { who: "hero", type: "walk", direction: "down" },
-      { who: "npc1", type: "walk", direction: "up", time: 300 },
-      { who: "me", type: "walk", direction: "down" },
-      { who: "me", type: "walk", direction: "down" },
-      { who: "me", type: "walk", direction: "down" },
-      { who: "me", type: "walk", direction: "right" },
+      {who: "hero", type: "walk", direction: "down"},
+      {who: "houseGuy", type: "walk", direction: "up"},
+      {who: "hero", type: "walk", direction: "down"},
+      {who: "npc1", type: "walk", direction: "up", time: 300},
+      {who: "me", type: "walk", direction: "down"},
+      {who: "me", type: "walk", direction: "down"},
+      {who: "me", type: "walk", direction: "down"},
+      {who: "me", type: "walk", direction: "right"},
 
-      { type: "textMessage", text: "Hi!" },
+      {type: "textMessage", text: "Hi!"},
     ]);
   }
 }
