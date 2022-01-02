@@ -8,67 +8,65 @@ class Overworld {
   ctx: CanvasRenderingContext2D;
   map?: OverworldMap = undefined;
   directionInput?: DirectionInput;
+  cameraPerson?: GameObject;
 
+  engine: FixedStepEngine;
   constructor(config: OverworldConfig) {
     this.element = config.element;
     this.canvas = this.element.querySelector(".game-canvas")!;
     this.ctx = this.canvas.getContext("2d")!;
+
+    this.engine = new FixedStepEngine(
+      60,
+      () => {
+        this.updateOverworldObjects();
+      },
+      120,
+      () => {
+        this.renderOverworld();
+      }
+    );
   }
 
-  startGameLoop() {
-    const step = () => {
-      requestAnimationFrame(() => {
-        step();
+  private updateOverworldObjects() {
+    Object.values(this.map!.gameObjects).forEach((gameObject) => {
+      if (gameObject instanceof Person) {
+        gameObject.update({
+          arrow: this.directionInput!.direction,
+          map: this.map!,
+        });
+      } else {
+        gameObject.update();
+      }
+    });
+  }
+
+  private renderOverworld() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.map!.drawLowerImage(this.ctx, this.cameraPerson!);
+
+    //draw game objects
+    Object.values(this.map!.gameObjects)
+      .sort((a, b) => a.y - b.y)
+      .forEach((gameObject) => {
+        gameObject.sprite.draw(this.ctx, this.cameraPerson!);
       });
 
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      if (this.map) {
-        // establish camera person
-        const cameraPerson = this.map.gameObjects.hero;
-
-        //update game objects
-        Object.values(this.map.gameObjects).forEach((gameObject) => {
-          if (gameObject instanceof Person) {
-            gameObject.update({
-              arrow: this.directionInput!.direction,
-              map: this.map!,
-            });
-          } else {
-            gameObject.update();
-          }
-        });
-
-        this.map.drawLowerImage(this.ctx, cameraPerson);
-
-        //draw game objects
-        Object.values(this.map.gameObjects)
-          .sort((a, b) => a.y - b.y)
-          .forEach((gameObject) => {
-            gameObject.sprite.draw(this.ctx, cameraPerson);
-          });
-
-        this.map.drawUpperImage(this.ctx, cameraPerson);
-      }
-    };
-
-    step();
+    this.map!.drawUpperImage(this.ctx, this.cameraPerson!);
   }
 
-  /**
-   * Draw to the canvas
-   *
-   * create a new image, assign a  source to that image
-   * when that image is downloaded, we copy the info to the canvas
-   *
-   * the image is scaled via css
-   */
   init() {
     this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
     this.map.mountObjects();
+
+    this.cameraPerson = this.map!.gameObjects.hero;
+
     this.directionInput = new DirectionInput();
     this.directionInput.init();
 
-    this.startGameLoop();
+    this.engine.start();
+
     this.map.startCutScene([
       {who: "hero", type: "walk", direction: "down"},
       {who: "houseGuy", type: "walk", direction: "up"},
@@ -78,7 +76,6 @@ class Overworld {
       {who: "me", type: "walk", direction: "down"},
       {who: "me", type: "walk", direction: "down"},
       {who: "me", type: "walk", direction: "right"},
-
       {type: "textMessage", text: "Hi!"},
     ]);
   }

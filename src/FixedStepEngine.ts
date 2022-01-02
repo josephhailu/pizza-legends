@@ -1,6 +1,6 @@
 class FixedStepEngine {
   updateFps: number;
-  renderFps?: number;
+  renderFps: number;
   update: (delta: number) => any;
   render: (delta: number) => any;
   updateInterval: number;
@@ -50,7 +50,6 @@ class FixedStepEngine {
       this.update(this.updateInterval);
       this.sinceLastUpdate -= this.updateInterval;
     }
-
     if (this.renderFps != null) {
       let renders = 0;
       while (this.sinceLastRender >= this.renderInterval) {
