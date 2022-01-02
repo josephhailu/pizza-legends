@@ -6,7 +6,8 @@ class TextMessage {
   text: string;
   element: HTMLElement | null;
   onComplete: () => void;
-  constructor({ text, onComplete }: TextMessageParams) {
+  actionListener?: KeyPressListener;
+  constructor({text, onComplete}: TextMessageParams) {
     this.text = text;
     this.onComplete = onComplete;
     this.element = null;
@@ -22,6 +23,11 @@ class TextMessage {
       `;
 
     this.element.querySelector("button")!.addEventListener("click", () => {
+      this.done();
+    });
+
+    this.actionListener = new KeyPressListener("KeyE", () => {
+      this.actionListener!.unbind();
       this.done();
     });
   }
