@@ -58,6 +58,19 @@ const UTILS = {
     return {x, y};
   },
 
+  oppositeDirection(direction: Directions) {
+    if (direction === "left") {
+      return "right";
+    }
+    if (direction === "right") {
+      return "left";
+    }
+    if (direction === "up") {
+      return "down";
+    }
+    return "up";
+  },
+
   emitEvent(name: string, detail: Record<string, any>) {
     const event = new CustomEvent(name, {
       detail,
