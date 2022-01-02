@@ -56,10 +56,18 @@ class Overworld {
     this.map!.drawUpperImage(this.ctx, this.cameraPerson!);
   }
 
-  bindActionInput(){
-    new KeyPressListener("KeyE",()=>{
-        this.map!.checkForActionCutscene();
-    })
+  bindActionInput() {
+    new KeyPressListener("KeyE", () => {
+      this.map!.checkForActionCutscene();
+    });
+  }
+
+  bindHeroPosiitonCheck() {
+    document.addEventListener(CUSTOM_EVENTS.PersonWalkComplete, (event) => {
+      if (event.detail.whoId === "hero") {
+        this.map!.checkForFootstepCutscene();
+      }
+    });
   }
 
   init() {
@@ -72,6 +80,7 @@ class Overworld {
     this.directionInput.init();
 
     this.bindActionInput();
+    this.bindHeroPosiitonCheck();
 
     this.engine.start();
 

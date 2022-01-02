@@ -2,6 +2,10 @@ type Walls = {
   [coordinateString: string]: boolean;
 };
 
+type CutsceneSpaces = {
+  [coordinateString: string]: Record<string, Behaviour[]>[];
+};
+
 type OverworldMapConfig = {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
@@ -9,6 +13,7 @@ type OverworldMapConfig = {
   upperImage: HTMLImageElement;
   upperSrc: string;
   walls?: Walls;
+  cutsceneSpaces?: CutsceneSpaces;
 };
 class OverworldMap {
   gameObjects: Record<string, GameObject>;
@@ -16,11 +21,11 @@ class OverworldMap {
   upperImage: HTMLImageElement;
   walls: Walls;
   isCutScenePlaying: boolean;
-
+  cutsceneSpaces: CutsceneSpaces;
   constructor(config: OverworldMapConfig) {
     this.gameObjects = config.gameObjects;
     this.walls = config.walls || {};
-
+    this.cutsceneSpaces = config.cutsceneSpaces || {};
     this.lowerImage = new Image();
     this.lowerImage.src = config.lowerSrc;
 
@@ -95,6 +100,15 @@ class OverworldMap {
     }
   }
 
+  checkForFootstepCutscene() {
+    const hero = this.gameObjects["hero"];
+
+    const match = this.cutsceneSpaces[`${hero.x},${hero.y}`];
+    if (!this.isCutScenePlaying && match && match.length) {
+      this.startCutScene(match[0].events);
+    }
+  }
+
   addWall(x: number, y: number) {
     this.walls[`${x},${y}`] = true;
   }
@@ -153,15 +167,10 @@ window.OverworldMaps = {
         ],
       }),
       me: new Person({
-        x: UTILS.withGrid(4),
-        y: UTILS.withGrid(6),
+        x: UTILS.withGrid(8),
+        y: UTILS.withGrid(5),
         src: "./images/characters/people/me.png",
-        behaviourLoop: [
-          {type: "walk", direction: "left"},
-          {type: "walk", direction: "up"},
-          {type: "walk", direction: "right"},
-          {type: "walk", direction: "down"},
-        ],
+
         animation: ANIMATIONS.singleFrame,
       }),
       houseGuy: new Person({
@@ -243,6 +252,21 @@ window.OverworldMaps = {
       [UTILS.asGridCoord(8, 6)]: true,
       [UTILS.asGridCoord(7, 7)]: true,
       [UTILS.asGridCoord(8, 7)]: true,
+    },
+    cutsceneSpaces: {
+      [UTILS.asGridCoord(7, 4)]: [
+        {
+          events: [
+            {type: "textMessage", text: "Hey!", faceHero: "me"},
+            {who: "me", type: "walk", direction: "left"},
+            {who: "me", type: "stand", direction: "up", time: 120},
+            {type: "textMessage", text: "You can't be in there!"},
+            {who: "me", type: "walk", direction: "right"},
+            {who: "hero", type: "walk", direction: "down"},
+            {who: "hero", type: "walk", direction: "left"},
+          ],
+        },
+      ],
     },
   },
   Kitchen: {
