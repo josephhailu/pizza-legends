@@ -16,6 +16,7 @@ type OverworldMapConfig = {
   cutsceneSpaces?: CutsceneSpaces;
 };
 class OverworldMap {
+  overworld?: Overworld;
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   upperImage: HTMLImageElement;
@@ -141,7 +142,7 @@ window.OverworldMaps = {
         y: UTILS.withGrid(6),
       }),
       npc1: new Person({
-        x: UTILS.withGrid(7),
+        x: UTILS.withGrid(10),
         y: UTILS.withGrid(9),
         src: "./images/characters/people/npc1.png",
         behaviourLoop: [
@@ -180,10 +181,16 @@ window.OverworldMaps = {
         animation: ANIMATIONS.singleFrame,
       }),
       gingerbread: new Person({
-        x: UTILS.withGrid(6),
+        x: UTILS.withGrid(3),
         y: UTILS.withGrid(8),
         src: "./images/characters/people/me2.png",
         animation: ANIMATIONS.singleFrame,
+        behaviourLoop: [
+          {type: "walk", direction: "left"},
+          {type: "walk", direction: "up"},
+          {type: "walk", direction: "right"},
+          {type: "walk", direction: "down"},
+        ],
         talking: [
           {
             events: [
@@ -192,13 +199,11 @@ window.OverworldMaps = {
                 text: "I have big feet.",
                 faceHero: "gingerbread",
               },
-              {who: "npc1", type: "stand", direction: "up", time: 2200},
+              {who: "hero", type: "stand", direction: "right", time: 100},
               {who: "hero", type: "stand", direction: "left", time: 300},
 
-              {who: "me", type: "stand", direction: "up", time: 1200},
-              {who: "hero", type: "stand", direction: "right", time: 800},
-
-              {type: "textMessage", text: "...What?", faceHero: "npc1"},
+              {who: "me", type: "stand", direction: "down", time: 2200},
+              {type: "textMessage", text: "...What?", faceHero: "gingerbread"},
             ],
           },
         ],
@@ -267,21 +272,43 @@ window.OverworldMaps = {
           ],
         },
       ],
+      [UTILS.asGridCoord(5, 10)]: [
+        {
+          events: [{type: "changeMap", map: "Kitchen"}],
+        },
+      ],
     },
   },
   Kitchen: {
     lowerSrc: "./images/maps/KitchenLower.png",
     upperSrc: "./images/maps/KitchenUpper.png",
     gameObjects: {
+      hero: new Person({
+        isPlayerControlled: true,
+        x: UTILS.withGrid(3),
+        y: UTILS.withGrid(5),
+        src: "./images/characters/people/hero.png",
+      }),
       npcA: new Person({
-        x: UTILS.withGrid(9),
-        y: UTILS.withGrid(2),
+        x: UTILS.withGrid(6),
+        y: UTILS.withGrid(5),
         src: "./images/characters/people/npc2.png",
       }),
       npcB: new Person({
         x: UTILS.withGrid(10),
-        y: UTILS.withGrid(4),
+        y: UTILS.withGrid(8),
         src: "./images/characters/people/npc3.png",
+        talking: [
+          {
+            events: [
+              {
+                type: "textMessage",
+                text: "You made it",
+                faceHero: "npcB",
+              },
+            ],
+          },
+        ],
       }),
     },
   },

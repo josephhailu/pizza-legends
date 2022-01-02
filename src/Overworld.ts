@@ -70,10 +70,15 @@ class Overworld {
     });
   }
 
-  init() {
-    this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
+  startMap(mapConfig: OverworldMapConfig) {
+    this.map = new OverworldMap(mapConfig);
+    this.map.overworld = this;
+    this.cameraPerson = this.map!.gameObjects.hero;
     this.map.mountObjects();
+  }
 
+  init() {
+    this.startMap(window.OverworldMaps.DemoRoom);
     this.cameraPerson = this.map!.gameObjects.hero;
 
     this.directionInput = new DirectionInput();

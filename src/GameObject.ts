@@ -1,4 +1,4 @@
-type EventTypes = "walk" | "stand" | "textMessage";
+type EventTypes = "walk" | "stand" | "textMessage" | "changeMap";
 type Behaviour = {
   type: EventTypes;
   direction?: Directions;
@@ -7,6 +7,7 @@ type Behaviour = {
   retry?: boolean;
   text?: string;
   faceHero?: string;
+  map?: string;
 };
 
 type GameObjectConfig = {

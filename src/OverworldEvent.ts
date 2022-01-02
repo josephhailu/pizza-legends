@@ -107,6 +107,12 @@ class OverworldEvent {
     });
     message.init(document.querySelector(".game-container")!);
   }
+
+  changeMap(resolve: (value: unknown) => void) {
+    this.map.overworld!.startMap(window.OverworldMaps[this.event.map!]);
+    resolve(true);
+  }
+
   init() {
     return new Promise((resolve) => {
       this[this.event.type](resolve);
