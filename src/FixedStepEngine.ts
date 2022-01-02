@@ -1,6 +1,6 @@
 class FixedStepEngine {
   updateFps: number;
-  renderFps: number;
+  renderFps?: number;
   update: (delta: number) => any;
   render: (delta: number) => any;
   updateInterval: number;
@@ -36,9 +36,12 @@ class FixedStepEngine {
   }
 
   gameLoop = (timestamp: number) => {
+    if (this.running) {
+      requestAnimationFrame(this.gameLoop);
+    }
+
     const deltaTime = (timestamp - this.lastTime) / 1000;
     this.lastTime = timestamp;
-    // console.log(timestamp, deltaTime * 1000);
 
     this.sinceLastUpdate += deltaTime;
     this.sinceLastRender += deltaTime;
@@ -47,6 +50,7 @@ class FixedStepEngine {
       this.update(this.updateInterval);
       this.sinceLastUpdate -= this.updateInterval;
     }
+
     if (this.renderFps != null) {
       let renders = 0;
       while (this.sinceLastRender >= this.renderInterval) {
@@ -57,23 +61,5 @@ class FixedStepEngine {
         this.render(this.renderInterval * renders);
       }
     }
-    if (this.running) {
-      requestAnimationFrame(this.gameLoop);
-    }
   };
 }
-
-// Example usage:
-// let render = 0;
-// const engine = new FixedStepEngine(60,
-//     deltaTime => {
-//         console.log('Update', deltaTime);
-//     },
-//     30, (deltaTime) => {
-//         console.log('Render', deltaTime);
-//         render++;
-//         if (render >= 3) {
-//             engine.stop();
-//         }
-//     });
-// engine.start();
