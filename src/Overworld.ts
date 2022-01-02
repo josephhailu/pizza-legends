@@ -56,6 +56,12 @@ class Overworld {
     this.map!.drawUpperImage(this.ctx, this.cameraPerson!);
   }
 
+  bindActionInput(){
+    new KeyPressListener("KeyE",()=>{
+        this.map!.checkForActionCutscene();
+    })
+  }
+
   init() {
     this.map = new OverworldMap(window.OverworldMaps.DemoRoom);
     this.map.mountObjects();
@@ -65,18 +71,20 @@ class Overworld {
     this.directionInput = new DirectionInput();
     this.directionInput.init();
 
+    this.bindActionInput();
+
     this.engine.start();
 
-    this.map.startCutScene([
-      {who: "hero", type: "walk", direction: "down"},
-      {who: "houseGuy", type: "walk", direction: "up"},
-      {who: "hero", type: "walk", direction: "down"},
-      {who: "npc1", type: "walk", direction: "up", time: 300},
-      {who: "me", type: "walk", direction: "down"},
-      {who: "me", type: "walk", direction: "down"},
-      {who: "me", type: "walk", direction: "down"},
-      {who: "me", type: "walk", direction: "right"},
-      {type: "textMessage", text: "Hi!"},
-    ]);
+    // this.map.startCutScene([
+    //   {who: "hero", type: "walk", direction: "down"},
+    //   {who: "houseGuy", type: "walk", direction: "up"},
+    //   {who: "hero", type: "walk", direction: "down"},
+    //   {who: "npc1", type: "walk", direction: "up", time: 300},
+    //   {who: "me", type: "walk", direction: "down"},
+    //   {who: "me", type: "walk", direction: "down"},
+    //   {who: "me", type: "walk", direction: "down"},
+    //   {who: "me", type: "walk", direction: "right"},
+    //   {type: "textMessage", text: "Hi!"},
+    // ]);
   }
 }

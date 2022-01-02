@@ -6,6 +6,7 @@ type Behaviour = {
   who?: string | null;
   retry?: boolean;
   text?: string;
+  faceHero?: string;
 };
 
 type GameObjectConfig = {
@@ -17,6 +18,7 @@ type GameObjectConfig = {
     [key: string]: number[][];
   };
   behaviourLoop?: Behaviour[];
+  talking?: Record<string, Behaviour[]>[];
 };
 
 class GameObject {
@@ -28,6 +30,7 @@ class GameObject {
   id: string | null;
   behaviourLoop: Behaviour[];
   behaviourLoopIndex: number;
+  talking: Record<string, Behaviour[]>[];
   constructor(config: GameObjectConfig) {
     this.id = null;
     this.x = config.x || 0;
@@ -43,6 +46,8 @@ class GameObject {
 
     this.behaviourLoop = config.behaviourLoop || [];
     this.behaviourLoopIndex = 0;
+
+    this.talking = config.talking || [];
   }
 
   mount(map: OverworldMap) {

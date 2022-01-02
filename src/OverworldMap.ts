@@ -45,7 +45,7 @@ class OverworldMap {
     );
   }
   isSpaceTaken(currentX: number, currentY: number, direction: Directions) {
-    const { x, y } = UTILS.nextPosition(currentX, currentY, direction);
+    const {x, y} = UTILS.nextPosition(currentX, currentY, direction);
     return this.walls[`${x},${y}`] || false;
   }
 
@@ -81,6 +81,20 @@ class OverworldMap {
     });
   }
 
+  checkForActionCutscene() {
+    const hero = this.gameObjects["hero"];
+    const nextCoords = UTILS.nextPosition(hero.x, hero.y, hero.direction);
+
+    const match = Object.values(this.gameObjects).find((gameObject) => {
+      return (
+        `${gameObject.x},${gameObject.y}` === `${nextCoords.x},${nextCoords.y}`
+      );
+    });
+    if (!this.isCutScenePlaying && match && match.talking.length) {
+      this.startCutScene(match.talking[0].events);
+    }
+  }
+
   addWall(x: number, y: number) {
     this.walls[`${x},${y}`] = true;
   }
@@ -89,7 +103,7 @@ class OverworldMap {
   }
   moveWall(wasX: number, wasY: number, direction: Directions) {
     this.removeWall(wasX, wasY);
-    const { x, y } = UTILS.nextPosition(wasX, wasY, direction);
+    const {x, y} = UTILS.nextPosition(wasX, wasY, direction);
     this.addWall(x, y);
   }
 }
@@ -117,10 +131,25 @@ window.OverworldMaps = {
         y: UTILS.withGrid(9),
         src: "./images/characters/people/npc1.png",
         behaviourLoop: [
-          { type: "stand", direction: "down", time: 800 },
-          { type: "stand", direction: "up", time: 800 },
-          { type: "stand", direction: "right", time: 1200 },
-          { type: "stand", direction: "up", time: 300 },
+          {type: "stand", direction: "down", time: 800},
+          {type: "stand", direction: "up", time: 800},
+          {type: "stand", direction: "right", time: 1200},
+          {type: "stand", direction: "up", time: 300},
+        ],
+        talking: [
+          {
+            events: [
+              {type: "textMessage", text: "Hiaaaaa!", faceHero: "npc1"},
+              {type: "textMessage", text: "OMG!"},
+              {who: "npc1", type: "stand", direction: "down", time: 120},
+              {who: "npc1", type: "stand", direction: "up", time: 120},
+              {who: "npc1", type: "stand", direction: "right", time: 120},
+              {who: "npc1", type: "stand", direction: "left", time: 120},
+              {type: "textMessage", text: "Leaavee!"},
+              {who: "hero", type: "walk", direction: "left"},
+              {who: "hero", type: "stand", direction: "right"},
+            ],
+          },
         ],
       }),
       me: new Person({
@@ -128,10 +157,10 @@ window.OverworldMaps = {
         y: UTILS.withGrid(6),
         src: "./images/characters/people/me.png",
         behaviourLoop: [
-          { type: "walk", direction: "left" },
-          { type: "walk", direction: "up" },
-          { type: "walk", direction: "right" },
-          { type: "walk", direction: "down" },
+          {type: "walk", direction: "left"},
+          {type: "walk", direction: "up"},
+          {type: "walk", direction: "right"},
+          {type: "walk", direction: "down"},
         ],
         animation: ANIMATIONS.singleFrame,
       }),
@@ -146,6 +175,24 @@ window.OverworldMaps = {
         y: UTILS.withGrid(8),
         src: "./images/characters/people/me2.png",
         animation: ANIMATIONS.singleFrame,
+        talking: [
+          {
+            events: [
+              {
+                type: "textMessage",
+                text: "I have big feet.",
+                faceHero: "gingerbread",
+              },
+              {who: "npc1", type: "stand", direction: "up", time: 2200},
+              {who: "hero", type: "stand", direction: "left", time: 300},
+
+              {who: "me", type: "stand", direction: "up", time: 1200},
+              {who: "hero", type: "stand", direction: "right", time: 800},
+
+              {type: "textMessage", text: "...What?", faceHero: "npc1"},
+            ],
+          },
+        ],
       }),
     },
     walls: {
