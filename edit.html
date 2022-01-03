@@ -12,11 +12,16 @@
       <body>
         <div class="container">
             <div class="controls">
-                <fieldset >
-                    <caption>Image Properties:</caption>
-                    <input type="file" name="upload" id="upload" accept="image/*" >
-                    <p id="image-properties"></p>
-                </fieldset>
+                <div class="status">
+                    <fieldset >
+                        <caption>Image Properties:</caption>
+                        <input type="file" name="upload" id="upload" accept="image/*" >
+                        <p id="image-properties"></p>
+                    </fieldset>
+                    <div class="info">
+                        <p id="message"></p>
+                    </div>
+                </div>
                 
                 <fieldset >
                    <caption>Cell Grid Size (pixels):</caption> 

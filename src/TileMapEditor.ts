@@ -6,6 +6,7 @@ type TileMapEditorConfig = {
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
   //   addElement: HTMLInputElement;
+  messageElement: HTMLParagraphElement;
 };
 
 class TileMapEditor {
@@ -20,6 +21,7 @@ class TileMapEditor {
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
   //   addElement: HTMLInputElement;
+  messageElement: HTMLParagraphElement;
 
   image: HTMLImageElement;
   isLoaded: boolean = false;
@@ -42,6 +44,7 @@ class TileMapEditor {
     this.widthElement = config.widthElement;
     this.heightElement = config.heightElement;
     // this.addElement = config.addElement;
+    this.messageElement = config.messageElement;
 
     this.image = new Image();
 
@@ -77,12 +80,31 @@ class TileMapEditor {
       (e) => this.handleCellSizeChange(e, "width"),
       false
     );
-
     this.heightElement.addEventListener(
       "change",
       (e) => this.handleCellSizeChange(e, "height"),
       false
     );
+
+    //listener for grid canvas mouseover
+    this.collisionGridCanvas.addEventListener("mousedown", (e) => {
+      let rect = this.collisionGridCanvas.getBoundingClientRect();
+      this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
+        e.clientX - rect.left
+      )}, y:  ${Math.floor(
+        e.clientY - rect.top
+      )}}<br>Cell Coords: ${this.getCellCoords([
+        e.clientX - rect.left,
+        e.clientY - rect.top,
+      ])}`;
+    });
+  }
+
+  getCellCoords(arg0: number[]) {
+    return [
+      Math.floor(arg0[0] / 3 / this.cellSize.width),
+      Math.floor(arg0[1] / 3 / this.cellSize.height),
+    ];
   }
 
   handleCellSizeChange(e: Event, dimension: "height" | "width"): any {
@@ -164,6 +186,7 @@ window.onload = function () {
   const widthElement = document.querySelector("#width") as HTMLInputElement;
   const heightElement = document.querySelector("#height") as HTMLInputElement;
   //   const addElement = document.querySelector("#add") as HTMLInputElement;
+  const messageElement = document.querySelector("#message") as HTMLInputElement;
 
   const tme = new TileMapEditor({
     mapCanvas,
@@ -173,6 +196,7 @@ window.onload = function () {
     widthElement,
     heightElement,
     // addElement,
+    messageElement,
   });
 
   tme.init();

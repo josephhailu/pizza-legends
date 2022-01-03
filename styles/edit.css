@@ -24,7 +24,11 @@ fieldset {
   outline: 1px solid white;
   background-color: antiquewhite;
 }
-
+.status {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .map-container {
   position: relative;
 
