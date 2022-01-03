@@ -143,7 +143,7 @@ class TileMapEditor {
     //draw grid based on input values
     this.collisionCtx.fillStyle = "blue";
     for (
-      let index = 0;
+      let index = 1;
       index <= this.mapCanvas.width / this.cellSize.width;
       index++
     ) {
@@ -156,7 +156,7 @@ class TileMapEditor {
     }
     this.collisionCtx.fillStyle = "orange";
     for (
-      let index = 0;
+      let index = 1;
       index <= this.mapCanvas.height / this.cellSize.height;
       index++
     ) {

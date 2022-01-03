@@ -35,7 +35,6 @@
 .canvases {
   position: relative;
   min-width: 80%;
-  outline: 1px solid white;
 }
 
 .canvases canvas {
@@ -48,6 +47,8 @@
   image-rendering: pixelated;
   /*scale assets, push image down to compensate*/
   transform: scale(3) translateY(50%);
+  outline: 1px solid white;
+
 }
 
 /* .tilemap-canvas {
