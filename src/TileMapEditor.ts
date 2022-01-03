@@ -79,6 +79,7 @@ class TileMapEditor {
       ...this.cellSize,
       [dimension]: parseInt((e.target! as HTMLInputElement).value),
     };
+    this.startApp();
   }
 
   /**
@@ -103,10 +104,35 @@ class TileMapEditor {
       this.canvasElement.height
     );
 
-    //add listners
     this.ctx.drawImage(this.image, 0, 0);
 
     //draw grid based on input values
+    this.ctx.fillStyle = "blue";
+    for (
+      let index = 0;
+      index < this.canvasElement.width / this.cellSize.width;
+      index++
+    ) {
+      this.ctx.fillRect(
+        index * this.cellSize.width,
+        0,
+        0.5,
+        this.canvasElement.height
+      );
+    }
+    this.ctx.fillStyle = "green";
+    for (
+      let index = 0;
+      index < this.canvasElement.height / this.cellSize.height;
+      index++
+    ) {
+      this.ctx.fillRect(
+        0,
+        index * this.cellSize.height,
+        this.canvasElement.width,
+        0.5
+      );
+    }
   }
 }
 
