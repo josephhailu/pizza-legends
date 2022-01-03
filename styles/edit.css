@@ -1,8 +1,12 @@
 .container {
+  min-height: 100vh;
+  width: 80vw;
+
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+
   background-color: rgb(182, 122, 44);
 }
 
@@ -21,15 +25,26 @@ fieldset {
   background-color: antiquewhite;
 }
 
-#tilemap-container {
+.map-container {
   position: relative;
 
+  background-color: rgb(192, 17, 55);
   outline: 1px solid white;
+}
+.canvases {
+  position: relative;
+}
 
+.canvases canvas {
+  image-rendering: pixelated;
   /*scale assets, push image down to compensate*/
   transform: scale(3) translateY(50%);
 }
 
-#tilemap-container canvas {
-  image-rendering: pixelated;
+.tilemap-canvas {
+  position: absolute;
+}
+
+.collision-canvas {
+  position: absolute;
 }

@@ -1,5 +1,6 @@
 type TileMapEditorConfig = {
-  canvasElement: HTMLCanvasElement;
+  mapCanvas: HTMLCanvasElement;
+  collisionGridCanvas: HTMLCanvasElement;
   fileElement: HTMLInputElement;
   imagePropertiesElement: HTMLParagraphElement;
   widthElement: HTMLInputElement;
@@ -8,8 +9,11 @@ type TileMapEditorConfig = {
 };
 
 class TileMapEditor {
-  canvasElement: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
+  mapCanvas: HTMLCanvasElement;
+  mapCtx: CanvasRenderingContext2D;
+
+  collisionGridCanvas: HTMLCanvasElement;
+  collisionCtx: CanvasRenderingContext2D;
 
   fileElement: HTMLInputElement;
   imagePropertiesElement: HTMLParagraphElement;
@@ -27,8 +31,11 @@ class TileMapEditor {
    *
    */
   constructor(config: TileMapEditorConfig) {
-    this.canvasElement = config.canvasElement;
-    this.ctx = this.canvasElement.getContext("2d")!;
+    this.mapCanvas = config.mapCanvas;
+    this.mapCtx = this.mapCanvas.getContext("2d")!;
+
+    this.collisionGridCanvas = config.collisionGridCanvas;
+    this.collisionCtx = this.collisionGridCanvas.getContext("2d")!;
 
     this.fileElement = config.fileElement;
     this.imagePropertiesElement = config.imagePropertiesElement;
@@ -40,8 +47,12 @@ class TileMapEditor {
 
     this.image.onload = () => {
       this.isLoaded = true;
-      this.canvasElement.width = this.image.width;
-      this.canvasElement.height = this.image.height;
+      this.mapCanvas.width = this.image.width;
+      this.mapCanvas.height = this.image.height;
+
+      this.collisionGridCanvas.width = this.image.width;
+      this.collisionGridCanvas.height = this.image.height;
+
       this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px\n Height: ${this.image.height}px`;
 
       this.startApp();
@@ -97,39 +108,40 @@ class TileMapEditor {
   }
 
   startApp() {
-    this.ctx.clearRect(
+    this.mapCtx.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
+    this.collisionCtx.clearRect(
       0,
       0,
-      this.canvasElement.width,
-      this.canvasElement.height
+      this.mapCanvas.width,
+      this.mapCanvas.height
     );
 
-    this.ctx.drawImage(this.image, 0, 0);
+    this.mapCtx.drawImage(this.image, 0, 0);
 
     //draw grid based on input values
-    this.ctx.fillStyle = "blue";
+    this.collisionCtx.fillStyle = "blue";
     for (
       let index = 0;
-      index < this.canvasElement.width / this.cellSize.width;
+      index <= this.mapCanvas.width / this.cellSize.width;
       index++
     ) {
-      this.ctx.fillRect(
+      this.collisionCtx.fillRect(
         index * this.cellSize.width,
         0,
         0.5,
-        this.canvasElement.height
+        this.mapCanvas.height
       );
     }
-    this.ctx.fillStyle = "green";
+    this.collisionCtx.fillStyle = "orange";
     for (
       let index = 0;
-      index < this.canvasElement.height / this.cellSize.height;
+      index <= this.mapCanvas.height / this.cellSize.height;
       index++
     ) {
-      this.ctx.fillRect(
+      this.collisionCtx.fillRect(
         0,
         index * this.cellSize.height,
-        this.canvasElement.width,
+        this.mapCanvas.width,
         0.5
       );
     }
@@ -137,8 +149,11 @@ class TileMapEditor {
 }
 
 window.onload = function () {
-  const canvasElement = document.querySelector(
+  const mapCanvas = document.querySelector(
     ".tilemap-canvas"
+  ) as HTMLCanvasElement;
+  const collisionGridCanvas = document.querySelector(
+    ".collision-canvas"
   ) as HTMLCanvasElement;
   //   c.width = DIMENSIONS.canvasDimensions.width;
   //   c.height = DIMENSIONS.canvasDimensions.height;
@@ -151,7 +166,8 @@ window.onload = function () {
   //   const addElement = document.querySelector("#add") as HTMLInputElement;
 
   const tme = new TileMapEditor({
-    canvasElement,
+    mapCanvas,
+    collisionGridCanvas,
     fileElement,
     imagePropertiesElement,
     widthElement,
