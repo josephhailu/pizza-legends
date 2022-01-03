@@ -2,8 +2,8 @@ type TileMapEditorConfig = {
   canvasElement: HTMLCanvasElement;
   fileElement: HTMLInputElement;
   imagePropertiesElement: HTMLParagraphElement;
-  //   widthElement: HTMLInputElement;
-  //   heightElement: HTMLInputElement;
+  widthElement: HTMLInputElement;
+  heightElement: HTMLInputElement;
   //   addElement: HTMLInputElement;
 };
 
@@ -13,13 +13,15 @@ class TileMapEditor {
 
   fileElement: HTMLInputElement;
   imagePropertiesElement: HTMLParagraphElement;
-  //   widthElement: HTMLInputElement;
-  //   heightElement: HTMLInputElement;
+  widthElement: HTMLInputElement;
+  heightElement: HTMLInputElement;
   //   addElement: HTMLInputElement;
 
   image: HTMLImageElement;
   isLoaded: boolean = false;
   selectedFile?: File;
+
+  cellSize: {width: number; height: number};
 
   /**
    *
@@ -30,9 +32,10 @@ class TileMapEditor {
 
     this.fileElement = config.fileElement;
     this.imagePropertiesElement = config.imagePropertiesElement;
-    // this.widthElement = config.widthElement;
-    // this.heightElement = config.heightElement;
+    this.widthElement = config.widthElement;
+    this.heightElement = config.heightElement;
     // this.addElement = config.addElement;
+
     this.image = new Image();
 
     this.image.onload = () => {
@@ -43,16 +46,45 @@ class TileMapEditor {
 
       this.startApp();
     };
+
+    this.cellSize = {
+      height: parseInt(this.widthElement.value) || 16,
+      width: parseInt(this.heightElement.value) || 16,
+    };
   }
   init() {
-    //listner for file load
+    //listener for file load
     this.fileElement.addEventListener(
       "change",
       (e) => this.handleFile(e),
       false
     );
+
+    //listener for cell width and height
+    this.widthElement.addEventListener(
+      "change",
+      (e) => this.handleCellSizeChange(e, "width"),
+      false
+    );
+
+    this.heightElement.addEventListener(
+      "change",
+      (e) => this.handleCellSizeChange(e, "height"),
+      false
+    );
   }
 
+  handleCellSizeChange(e: Event, dimension: "height" | "width"): any {
+    this.cellSize = {
+      ...this.cellSize,
+      [dimension]: parseInt((e.target! as HTMLInputElement).value),
+    };
+  }
+
+  /**
+   * https://stackoverflow.com/a/56140769/11449115
+   * @param e
+   */
   handleFile(e: Event) {
     this.selectedFile = (e.target as HTMLInputElement).files![0];
     const reader = new FileReader();
@@ -73,6 +105,8 @@ class TileMapEditor {
 
     //add listners
     this.ctx.drawImage(this.image, 0, 0);
+
+    //draw grid based on input values
   }
 }
 
@@ -86,16 +120,16 @@ window.onload = function () {
   const imagePropertiesElement = document.querySelector(
     "#image-properties"
   ) as HTMLParagraphElement;
-  //   const widthElement = document.querySelector("#width") as HTMLInputElement;
-  //   const heightElement = document.querySelector("#height") as HTMLInputElement;
+  const widthElement = document.querySelector("#width") as HTMLInputElement;
+  const heightElement = document.querySelector("#height") as HTMLInputElement;
   //   const addElement = document.querySelector("#add") as HTMLInputElement;
 
   const tme = new TileMapEditor({
     canvasElement,
     fileElement,
     imagePropertiesElement,
-    // widthElement,
-    // heightElement,
+    widthElement,
+    heightElement,
     // addElement,
   });
 
