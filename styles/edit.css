@@ -1,3 +1,7 @@
+body {
+  background-color: gray;
+}
+
 .container {
   position: relative;
 
@@ -9,7 +13,7 @@
   flex-direction: column;
   align-items: center;
 
-  background-color: rgb(182, 122, 44);
+  background-color: rgb(240, 217, 187);
 }
 
 .controls {
@@ -36,19 +40,22 @@
   position: relative;
   min-width: 80%;
 }
-
+.info {
+  margin: 1rem;
+  min-height: 36px;
+  text-align: center;
+}
 .canvases canvas {
   position: absolute;
   left: 0;
   right: 0;
-  
-  margin: 0 auto;
+
+  margin: -50px auto;
 
   image-rendering: pixelated;
   /*scale assets, push image down to compensate*/
   transform: scale(3) translateY(50%);
   outline: 1px solid white;
-
 }
 
 /* .tilemap-canvas {

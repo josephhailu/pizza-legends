@@ -1,10 +1,13 @@
 type TileMapEditorConfig = {
-  mapCanvas: HTMLCanvasElement;
-  collisionGridCanvas: HTMLCanvasElement;
+  canvases: Record<string, HTMLCanvasElement>;
+
   fileElement: HTMLInputElement;
   imagePropertiesElement: HTMLParagraphElement;
+
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
+  opacityElement: HTMLInputElement;
+
   //   addElement: HTMLInputElement;
   messageElement: HTMLParagraphElement;
 };
@@ -13,6 +16,9 @@ class TileMapEditor {
   mapCanvas: HTMLCanvasElement;
   mapCtx: CanvasRenderingContext2D;
 
+  cellGridCanvas: HTMLCanvasElement;
+  cellGridCtx: CanvasRenderingContext2D;
+
   collisionGridCanvas: HTMLCanvasElement;
   collisionCtx: CanvasRenderingContext2D;
 
@@ -20,7 +26,9 @@ class TileMapEditor {
   imagePropertiesElement: HTMLParagraphElement;
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
-  //   addElement: HTMLInputElement;
+  opacityElement: HTMLInputElement;
+
+  // addElement: HTMLInputElement;
   messageElement: HTMLParagraphElement;
 
   image: HTMLImageElement;
@@ -33,16 +41,21 @@ class TileMapEditor {
    *
    */
   constructor(config: TileMapEditorConfig) {
-    this.mapCanvas = config.mapCanvas;
+    this.mapCanvas = config.canvases.mapCanvas;
     this.mapCtx = this.mapCanvas.getContext("2d")!;
 
-    this.collisionGridCanvas = config.collisionGridCanvas;
+    this.cellGridCanvas = config.canvases.cellGridCanvas;
+    this.cellGridCtx = this.cellGridCanvas.getContext("2d")!;
+
+    this.collisionGridCanvas = config.canvases.collisionGridCanvas;
     this.collisionCtx = this.collisionGridCanvas.getContext("2d")!;
 
     this.fileElement = config.fileElement;
     this.imagePropertiesElement = config.imagePropertiesElement;
     this.widthElement = config.widthElement;
     this.heightElement = config.heightElement;
+    this.opacityElement = config.opacityElement;
+
     // this.addElement = config.addElement;
     this.messageElement = config.messageElement;
 
@@ -50,8 +63,12 @@ class TileMapEditor {
 
     this.image.onload = () => {
       this.isLoaded = true;
+
       this.mapCanvas.width = this.image.width;
       this.mapCanvas.height = this.image.height;
+
+      this.cellGridCanvas.width = this.image.width;
+      this.cellGridCanvas.height = this.image.height;
 
       this.collisionGridCanvas.width = this.image.width;
       this.collisionGridCanvas.height = this.image.height;
@@ -66,6 +83,7 @@ class TileMapEditor {
       width: parseInt(this.heightElement.value) || 16,
     };
   }
+
   init() {
     //listener for file load
     this.fileElement.addEventListener(
@@ -86,7 +104,17 @@ class TileMapEditor {
       false
     );
 
-    //listener for grid canvas mouseover
+    //listener for opacity
+    this.opacityElement.addEventListener(
+      "change",
+      (e) =>
+        (this.collisionGridCanvas.style.opacity = (
+          e.target! as HTMLInputElement
+        ).value),
+      false
+    );
+
+    //listener for grid canvas click
     this.collisionGridCanvas.addEventListener("mousedown", (e) => {
       let rect = this.collisionGridCanvas.getBoundingClientRect();
       this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
@@ -171,30 +199,35 @@ class TileMapEditor {
 }
 
 window.onload = function () {
-  const mapCanvas = document.querySelector(
-    ".tilemap-canvas"
-  ) as HTMLCanvasElement;
-  const collisionGridCanvas = document.querySelector(
-    ".collision-canvas"
-  ) as HTMLCanvasElement;
-  //   c.width = DIMENSIONS.canvasDimensions.width;
-  //   c.height = DIMENSIONS.canvasDimensions.height;
+  const canvases = {
+    mapCanvas: document.querySelector(".tilemap-canvas") as HTMLCanvasElement,
+    cellGridCanvas: document.querySelector(
+      ".cell-grid-canvas"
+    ) as HTMLCanvasElement,
+    collisionGridCanvas: document.querySelector(
+      ".collision-canvas"
+    ) as HTMLCanvasElement,
+  };
+
   const fileElement = document.querySelector("#upload") as HTMLInputElement;
   const imagePropertiesElement = document.querySelector(
     "#image-properties"
   ) as HTMLParagraphElement;
   const widthElement = document.querySelector("#width") as HTMLInputElement;
   const heightElement = document.querySelector("#height") as HTMLInputElement;
+  const opacityElement = document.querySelector("#opacity") as HTMLInputElement;
+
   //   const addElement = document.querySelector("#add") as HTMLInputElement;
   const messageElement = document.querySelector("#message") as HTMLInputElement;
 
   const tme = new TileMapEditor({
-    mapCanvas,
-    collisionGridCanvas,
+    canvases,
+
     fileElement,
     imagePropertiesElement,
     widthElement,
     heightElement,
+    opacityElement,
     // addElement,
     messageElement,
   });

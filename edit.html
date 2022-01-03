@@ -18,9 +18,7 @@
                         <input type="file" name="upload" id="upload" accept="image/*" >
                         <p id="image-properties"></p>
                     </fieldset>
-                    <div class="info">
-                        <p id="message"></p>
-                    </div>
+                    
                 </div>
                 
                 <fieldset >
@@ -30,6 +28,9 @@
                     
                     <label for="height">Height</label>  
                     <input type="number" name="height" id="height"max="100"min="1" value="16">
+                    
+                    <label for="opacity">Opacity</label>  
+                    <input type="range" name="opacity" id="opacity"max="1"min="0" value=".5" step="0.01">
 
                 </fieldset>
                 
@@ -45,8 +46,13 @@
                     <button type="submit">Export</button>
                 </div>
             </div> 
+            <div class="info">
+                <p id="message"></p>
+            </div>
             <div class="canvases">
-                    <canvas class="tilemap-canvas"></canvas>
+
+                <canvas class="tilemap-canvas"></canvas>
+                <canvas class="cell-grid-canvas"></canvas>
                 <canvas class="collision-canvas"></canvas>
             </div> 
            
