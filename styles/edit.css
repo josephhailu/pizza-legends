@@ -1,4 +1,6 @@
 .container {
+  position: relative;
+
   min-height: 100vh;
   width: 80vw;
 
@@ -10,45 +12,46 @@
   background-color: rgb(182, 122, 44);
 }
 
-fieldset {
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
 .controls {
   width: 80%;
-
   margin-top: 3rem;
   padding: 1rem;
 
   outline: 1px solid white;
   background-color: antiquewhite;
 }
+
+.controls fieldset {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
 .status {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
-.map-container {
-  position: relative;
 
-  background-color: rgb(192, 17, 55);
-  outline: 1px solid white;
-}
 .canvases {
   position: relative;
+  min-width: 80%;
+  outline: 1px solid white;
 }
 
 .canvases canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  
+  margin: 0 auto;
+
   image-rendering: pixelated;
   /*scale assets, push image down to compensate*/
   transform: scale(3) translateY(50%);
 }
 
-.tilemap-canvas {
-  position: absolute;
+/* .tilemap-canvas {
 }
 
 .collision-canvas {
-  position: absolute;
-}
+} */
