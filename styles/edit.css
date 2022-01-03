@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: rgb(182, 122, 44);
+}
+
+fieldset {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.controls {
+  width: 80%;
+
+  margin-top: 3rem;
+  padding: 1rem;
+
+  outline: 1px solid white;
+  background-color: antiquewhite;
+}
+
+#tilemap-container {
+  position: relative;
+
+  outline: 1px solid white;
+
+  /*scale assets, push image down to compensate*/
+  transform: scale(3) translateY(50%);
+}
+
+#tilemap-container canvas {
+  image-rendering: pixelated;
+}

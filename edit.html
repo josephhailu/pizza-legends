@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./styles/global.css" type="text/css" />
+        <link rel="stylesheet" href="./styles/edit.css" type="text/css" />
+        <title>Pizza Legends</title>
+      </head>
+    
+      <body>
+        <div class="container">
+            <div class="controls">
+                <fieldset >
+                    <caption>Image Properties:</caption>
+                    <input type="file" name="upload" id="upload" accept="image/*" >
+                    <p id="image-properties"></p>
+                </fieldset>
+                
+                <fieldset >
+                   <caption>Cell Grid Size (pixels):</caption> 
+                    <label for="width">Width</label> 
+                    <input type="number" name="width" id="width" max="100" min="1" value="16">
+                    
+                    <label for="height">Height</label>  
+                    <input type="number" name="height" id="height"max="100"min="1" value="16">
+
+                </fieldset>
+                
+                    <input type="radio" id="add" name="wall" value="Add"
+                           checked>
+                    <label for="add">Add Wall</label>
+                   
+                    <input type="radio" id="remove" name="wall" value="Remove">
+                    <label for="remove">Remove Wall</label>
+                 
+                <div class="export">
+                    <br>
+                    <button type="submit">Export</button>
+                </div>
+            </div>
+            <div id="tilemap-container">
+                <canvas class="tilemap-canvas"></canvas>
+            </div> 
+        </div>
+        
+    
+        <!-- Scripts -->
+        <script src="./dist/utils.js"></script>
+        <script src="./dist/TileMapEditor.js"></script>
+       
+        
+</body>
+</html>
