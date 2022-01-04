@@ -1,0 +1,17 @@
+:root {
+  --border-color: #123123;
+  --dialog-background: #e6760e;
+
+  --menu-background: #bcefab;
+  --menu-border-color: #097ef4;
+  --menu-font-color: #191a1a;
+  --menu-selected-background: #ca1ee0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}

@@ -2,6 +2,10 @@ type Walls = {
   [coordinateString: string]: boolean;
 };
 
+type CutsceneSpaces = {
+  [coordinateString: string]: Record<string, Behaviour[]>[];
+};
+
 type OverworldMapConfig = {
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
@@ -9,18 +13,20 @@ type OverworldMapConfig = {
   upperImage: HTMLImageElement;
   upperSrc: string;
   walls?: Walls;
+  cutsceneSpaces?: CutsceneSpaces;
 };
 class OverworldMap {
+  overworld?: Overworld;
   gameObjects: Record<string, GameObject>;
   lowerImage: HTMLImageElement;
   upperImage: HTMLImageElement;
   walls: Walls;
   isCutScenePlaying: boolean;
-
+  cutsceneSpaces: CutsceneSpaces;
   constructor(config: OverworldMapConfig) {
     this.gameObjects = config.gameObjects;
     this.walls = config.walls || {};
-
+    this.cutsceneSpaces = config.cutsceneSpaces || {};
     this.lowerImage = new Image();
     this.lowerImage.src = config.lowerSrc;
 
@@ -45,7 +51,7 @@ class OverworldMap {
     );
   }
   isSpaceTaken(currentX: number, currentY: number, direction: Directions) {
-    const { x, y } = UTILS.nextPosition(currentX, currentY, direction);
+    const {x, y} = UTILS.nextPosition(currentX, currentY, direction);
     return this.walls[`${x},${y}`] || false;
   }
 
@@ -68,7 +74,40 @@ class OverworldMap {
       });
       await eventHandler.init();
     }
+
     this.isCutScenePlaying = false;
+
+    //reset gameobjects, and do behaviour
+    Object.values(this.gameObjects).forEach((gameObject) => {
+      if (gameObject instanceof Person) {
+        gameObject.doBehaviourEvent(this, gameObject.isStanding);
+      } else {
+        gameObject.doBehaviourEvent(this);
+      }
+    });
+  }
+
+  checkForActionCutscene() {
+    const hero = this.gameObjects["hero"];
+    const nextCoords = UTILS.nextPosition(hero.x, hero.y, hero.direction);
+
+    const match = Object.values(this.gameObjects).find((gameObject) => {
+      return (
+        `${gameObject.x},${gameObject.y}` === `${nextCoords.x},${nextCoords.y}`
+      );
+    });
+    if (!this.isCutScenePlaying && match && match.talking.length) {
+      this.startCutScene(match.talking[0].events);
+    }
+  }
+
+  checkForFootstepCutscene() {
+    const hero = this.gameObjects["hero"];
+
+    const match = this.cutsceneSpaces[`${hero.x},${hero.y}`];
+    if (!this.isCutScenePlaying && match && match.length) {
+      this.startCutScene(match[0].events);
+    }
   }
 
   addWall(x: number, y: number) {
@@ -79,7 +118,7 @@ class OverworldMap {
   }
   moveWall(wasX: number, wasY: number, direction: Directions) {
     this.removeWall(wasX, wasY);
-    const { x, y } = UTILS.nextPosition(wasX, wasY, direction);
+    const {x, y} = UTILS.nextPosition(wasX, wasY, direction);
     this.addWall(x, y);
   }
 }
@@ -103,39 +142,71 @@ window.OverworldMaps = {
         y: UTILS.withGrid(6),
       }),
       npc1: new Person({
-        x: UTILS.withGrid(7),
+        x: UTILS.withGrid(10),
         y: UTILS.withGrid(9),
         src: "./images/characters/people/npc1.png",
         behaviourLoop: [
-          { type: "stand", direction: "down", time: 800 },
-          { type: "stand", direction: "up", time: 800 },
-          { type: "stand", direction: "right", time: 1200 },
-          { type: "stand", direction: "up", time: 300 },
+          {type: "stand", direction: "down", time: 800},
+          {type: "stand", direction: "up", time: 800},
+          {type: "stand", direction: "right", time: 1200},
+          {type: "stand", direction: "up", time: 300},
         ],
-      }),
-      npc2: new Person({
-        x: UTILS.withGrid(4),
-        y: UTILS.withGrid(6),
-        src: "./images/characters/people/me.png",
-        behaviourLoop: [
-          { type: "walk", direction: "left" },
-          { type: "walk", direction: "up" },
-          { type: "walk", direction: "right" },
-          { type: "walk", direction: "down" },
+        talking: [
+          {
+            events: [
+              {type: "textMessage", text: "Hiaaaaa!", faceHero: "npc1"},
+              {type: "textMessage", text: "OMG!"},
+              {who: "npc1", type: "stand", direction: "down", time: 120},
+              {who: "npc1", type: "stand", direction: "up", time: 120},
+              {who: "npc1", type: "stand", direction: "right", time: 120},
+              {who: "npc1", type: "stand", direction: "left", time: 120},
+              {type: "textMessage", text: "Leaavee!"},
+              {who: "hero", type: "walk", direction: "left"},
+              {who: "hero", type: "stand", direction: "right"},
+            ],
+          },
         ],
-        animation: ANIMATIONS.singleFrame,
       }),
       me: new Person({
+        x: UTILS.withGrid(8),
+        y: UTILS.withGrid(5),
+        src: "./images/characters/people/me.png",
+
+        animation: ANIMATIONS.singleFrame,
+      }),
+      houseGuy: new Person({
         x: UTILS.withGrid(9),
         y: UTILS.withGrid(7),
         src: "./images/characters/people/uhh.png",
         animation: ANIMATIONS.singleFrame,
       }),
-      me2: new Person({
-        x: UTILS.withGrid(6),
+      gingerbread: new Person({
+        x: UTILS.withGrid(3),
         y: UTILS.withGrid(8),
         src: "./images/characters/people/me2.png",
         animation: ANIMATIONS.singleFrame,
+        behaviourLoop: [
+          {type: "walk", direction: "left"},
+          {type: "walk", direction: "up"},
+          {type: "walk", direction: "right"},
+          {type: "walk", direction: "down"},
+        ],
+        talking: [
+          {
+            events: [
+              {
+                type: "textMessage",
+                text: "I have big feet.",
+                faceHero: "gingerbread",
+              },
+              {who: "hero", type: "stand", direction: "right", time: 100},
+              {who: "hero", type: "stand", direction: "left", time: 300},
+
+              {who: "me", type: "stand", direction: "down", time: 2200},
+              {type: "textMessage", text: "...What?", faceHero: "gingerbread"},
+            ],
+          },
+        ],
       }),
     },
     walls: {
@@ -187,21 +258,73 @@ window.OverworldMaps = {
       [UTILS.asGridCoord(7, 7)]: true,
       [UTILS.asGridCoord(8, 7)]: true,
     },
+    cutsceneSpaces: {
+      [UTILS.asGridCoord(7, 4)]: [
+        {
+          events: [
+            {type: "textMessage", text: "Hey!", faceHero: "me"},
+            {who: "me", type: "walk", direction: "left"},
+            {who: "me", type: "stand", direction: "up", time: 120},
+            {type: "textMessage", text: "You can't be in there!"},
+            {who: "me", type: "walk", direction: "right"},
+            {who: "hero", type: "walk", direction: "down"},
+            {who: "hero", type: "walk", direction: "left"},
+          ],
+        },
+      ],
+      [UTILS.asGridCoord(5, 10)]: [
+        {
+          events: [{type: "changeMap", map: "Kitchen"}],
+        },
+      ],
+    },
   },
   Kitchen: {
     lowerSrc: "./images/maps/KitchenLower.png",
     upperSrc: "./images/maps/KitchenUpper.png",
     gameObjects: {
+      hero: new Person({
+        isPlayerControlled: true,
+        x: UTILS.withGrid(3),
+        y: UTILS.withGrid(5),
+        src: "./images/characters/people/hero.png",
+      }),
       npcA: new Person({
-        x: UTILS.withGrid(9),
-        y: UTILS.withGrid(2),
+        x: UTILS.withGrid(6),
+        y: UTILS.withGrid(5),
         src: "./images/characters/people/npc2.png",
       }),
       npcB: new Person({
         x: UTILS.withGrid(10),
-        y: UTILS.withGrid(4),
+        y: UTILS.withGrid(8),
         src: "./images/characters/people/npc3.png",
+        talking: [
+          {
+            events: [
+              {
+                type: "textMessage",
+                text: "You made it",
+                faceHero: "npcB",
+              },
+            ],
+          },
+        ],
       }),
+    },
+    walls: {
+      "16,80": true,
+      "16,96": true,
+      "16,112": true,
+      "16,144": true,
+      "32,144": true,
+      "64,160": true,
+      "96,160": true,
+      "112,112": true,
+      "96,112": true,
+      "144,112": true,
+      "160,112": true,
+      "144,144": true,
+      "160,144": true,
     },
   },
 };

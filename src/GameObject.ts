@@ -1,10 +1,13 @@
-type EventTypes = "walk" | "stand";
+type EventTypes = "walk" | "stand" | "textMessage" | "changeMap";
 type Behaviour = {
   type: EventTypes;
-  direction: Directions;
+  direction?: Directions;
   time?: number;
   who?: string | null;
   retry?: boolean;
+  text?: string;
+  faceHero?: string;
+  map?: string;
 };
 
 type GameObjectConfig = {
@@ -16,6 +19,7 @@ type GameObjectConfig = {
     [key: string]: number[][];
   };
   behaviourLoop?: Behaviour[];
+  talking?: Record<string, Behaviour[]>[];
 };
 
 class GameObject {
@@ -23,10 +27,11 @@ class GameObject {
   x: number;
   isMounted: boolean;
   sprite: Sprite;
-  direction: "up" | "down" | "left" | "right";
+  direction: Directions;
   id: string | null;
   behaviourLoop: Behaviour[];
   behaviourLoopIndex: number;
+  talking: Record<string, Behaviour[]>[];
   constructor(config: GameObjectConfig) {
     this.id = null;
     this.x = config.x || 0;
@@ -42,6 +47,8 @@ class GameObject {
 
     this.behaviourLoop = config.behaviourLoop || [];
     this.behaviourLoopIndex = 0;
+
+    this.talking = config.talking || [];
   }
 
   mount(map: OverworldMap) {
@@ -62,8 +69,12 @@ class GameObject {
    * @param map map that holds game object references
    * @returns Promise<void>
    */
-  async doBehaviourEvent(map: OverworldMap) {
-    if (map.isCutScenePlaying || this.behaviourLoop.length === 0) {
+  async doBehaviourEvent(map: OverworldMap, exitCondition = false) {
+    if (
+      map.isCutScenePlaying ||
+      this.behaviourLoop.length === 0 ||
+      exitCondition
+    ) {
       return;
     }
 

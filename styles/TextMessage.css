@@ -1,0 +1,29 @@
+.TextMessage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  /*scaled up 3x in global.css*/
+  height: 36px;
+  padding: 4px;
+  background-color: var(--menu-background);
+  border-top: 1px solid var(--menu-border-color);
+  color: var(--menu-font-color);
+}
+
+.TextMessage_p {
+  font-size: 12px;
+}
+
+.TextMessage_button {
+  font-size: 8px;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+}

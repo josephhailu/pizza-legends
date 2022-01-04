@@ -1,0 +1,63 @@
+body {
+  background-color: gray;
+}
+
+.container {
+  position: relative;
+  min-height: 100vh;
+
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: rgb(240, 217, 187);
+}
+
+.controls {
+  width: 80%;
+  margin-top: 3rem;
+  padding: 1rem;
+
+  outline: 1px solid white;
+  background-color: antiquewhite;
+}
+
+.controls fieldset {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.status {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.canvases {
+  position: relative;
+  min-width: 80%;
+}
+.info {
+  margin: 1rem;
+  min-height: 36px;
+  text-align: center;
+}
+.canvases canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  margin: -50px auto;
+
+  image-rendering: pixelated;
+  /*scale assets, push image down to compensate*/
+  transform: scale(3) translateY(50%);
+  outline: 1px solid white;
+}
+
+/* .tilemap-canvas {
+}
+
+.collision-canvas {
+} */

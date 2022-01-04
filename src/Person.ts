@@ -13,6 +13,7 @@ type SpriteUpdateState = {
 
 class Person extends GameObject {
   movingProgressRemaining: number;
+  isStanding = false;
   directionUpdate: DirectionUpdate;
   isPlayerControlled: boolean;
   constructor(config: PersonConfig) {
@@ -50,7 +51,7 @@ class Person extends GameObject {
   }
 
   startBehaviour(state: SpriteUpdateState, behaviour: Behaviour) {
-    this.direction = behaviour.direction;
+    this.direction = behaviour.direction!;
     if (behaviour.type === "walk") {
       if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
         behaviour.retry &&
@@ -66,9 +67,11 @@ class Person extends GameObject {
       this.updateSprite();
     }
     if (behaviour.type === "stand") {
+      this.isStanding = true;
       setTimeout(() => {
         UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, { whoId: this.id });
       }, behaviour.time!);
+      this.isStanding = false;
     }
   }
 
