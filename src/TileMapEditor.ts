@@ -15,7 +15,6 @@ class TileMapEditor {
   heightElement: HTMLInputElement;
   opacityElement: HTMLInputElement;
 
-  // addElement: HTMLInputElement;
   messageElement: HTMLParagraphElement;
 
   image: HTMLImageElement;
@@ -48,7 +47,6 @@ class TileMapEditor {
       "#opacity"
     ) as HTMLInputElement;
 
-    // this.addElement = document.querySelector("#wall") as HTMLInputElement;
     this.messageElement = document.querySelector(
       "#message"
     ) as HTMLInputElement;
@@ -118,7 +116,7 @@ class TileMapEditor {
       this.drawCollisionRect(canvasCoords);
     });
 
-    //listener for file load
+    //listener for radio
     document.querySelectorAll('input[name="wall"]')!.forEach((element) => {
       element.addEventListener(
         "click",
@@ -131,6 +129,27 @@ class TileMapEditor {
         false
       );
     });
+
+    //https://stackoverflow.com/a/26414528/11449115
+    //listener for JSON export
+    document.querySelector("#exportJSON")!.addEventListener(
+      "click",
+      (e) => {
+        if (!!this.walls && Object.values(this.walls).length !== 0) {
+          let data =
+            "text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(this.walls));
+          document
+            .querySelector("#exportJSON")!
+            .setAttribute("href", "data:" + data);
+
+          document
+            .querySelector("#exportJSON")!
+            .setAttribute("download", "data.json");
+        }
+      },
+      false
+    );
   }
 
   drawCollisionRect(canvasCoords: number[]) {
@@ -206,7 +225,7 @@ class TileMapEditor {
     let mapCtx = this.canvases.mapCanvas.getContext("2d")!;
     mapCtx.drawImage(this.image, 0, 0);
 
-    //draw grid based on input values
+    //draw grid based on image
     this.drawCellGrid();
   }
 
@@ -229,6 +248,5 @@ class TileMapEditor {
 
 window.onload = function () {
   const tme = new TileMapEditor({cssScaleFactor: 3});
-
   tme.init();
 };
