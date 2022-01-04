@@ -60,7 +60,7 @@ class TileMapEditor {
         c.height = this.image.height;
       });
 
-      this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px\n Height: ${this.image.height}px`;
+      this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px Height: ${this.image.height}px`;
       this.walls = {};
 
       this.startApp();
@@ -134,7 +134,7 @@ class TileMapEditor {
     //listener for JSON export
     document.querySelector("#exportJSON")!.addEventListener(
       "click",
-      (e) => {
+      () => {
         if (!!this.walls && Object.values(this.walls).length !== 0) {
           let data =
             "text/json;charset=utf-8," +
@@ -153,19 +153,22 @@ class TileMapEditor {
   }
 
   drawCollisionRect(canvasCoords: number[]) {
-    let [x, y] = this.getCellCoords(canvasCoords);
+    let [cellX, cellY] = this.getCellCoords(canvasCoords);
 
-    let [gridX, gridY] = [x * this.cellSize.width, y * this.cellSize.height];
+    //top left canvas coords of cell
+    let canvasX = cellX * this.cellSize.width;
+    let canvasY = cellY * this.cellSize.height;
+
     if (this.isAddingTiles) {
-      if (!this.walls[UTILS.asGridCoord(x, y)]) {
-        this.walls[UTILS.asGridCoord(x, y)] = true;
-        this.drawWall(gridX, gridY);
+      if (!this.walls[UTILS.asGridCoord(cellX, cellY)]) {
+        this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
+        this.drawWall(canvasX, canvasY);
       } else {
         return;
       }
     } else {
-      this.drawWall(gridX, gridY, false);
-      delete this.walls[UTILS.asGridCoord(x, y)];
+      this.drawWall(canvasX, canvasY, false);
+      delete this.walls[UTILS.asGridCoord(cellX, cellY)];
     }
   }
 
@@ -199,6 +202,7 @@ class TileMapEditor {
       ...this.cellSize,
       [dimension]: parseInt((e.target! as HTMLInputElement).value),
     };
+    this.walls = {};
     this.drawCellGrid();
   }
 
@@ -230,19 +234,30 @@ class TileMapEditor {
   }
 
   private drawCellGrid() {
+    // draw vertical grid lines
+    this.drawGridLines(this.cellSize.width);
+    // draw horizontal grid lines
+    this.drawGridLines(this.cellSize.height);
+  }
+
+  drawGridLines(axisCellSize: number) {
     let cellGridCtx = this.canvases.cellGridCanvas.getContext("2d")!;
     let width = this.canvases.mapCanvas.width;
     let height = this.canvases.mapCanvas.height;
 
     cellGridCtx.clearRect(0, 0, width, height);
     cellGridCtx.fillStyle = "blue";
-    for (let index = 1; index <= width / this.cellSize.width; index++) {
-      cellGridCtx.fillRect(index * this.cellSize.width, 0, 0.5, height);
+    for (let index = 1; index <= width / axisCellSize; index++) {
+      cellGridCtx.fillRect(index * axisCellSize, 0, 0.5, height);
     }
-    cellGridCtx.fillStyle = "orange";
-    for (let index = 1; index <= height / this.cellSize.height; index++) {
-      cellGridCtx.fillRect(0, index * this.cellSize.height, width, 0.5);
-    }
+  }
+
+  draw() {
+    //draw canvas layers
+    //draw image layer
+    //draw cell grid layer
+    this.drawCellGrid();
+    //draw collision grid layer
   }
 }
 
