@@ -111,11 +111,13 @@ class TileMapEditor {
 
     //listener for grid canvas click
     this.canvases.collisionGridCanvas.addEventListener("mousedown", (e) => {
-      const rect = this.canvases.collisionGridCanvas.getBoundingClientRect();
+      if (this.isImageLoaded) {
+        const rect = this.canvases.collisionGridCanvas.getBoundingClientRect();
 
-      const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
-      this.updateStatusMessage(canvasCoords);
-      this.updateCollisionObject(canvasCoords);
+        const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+        this.updateMouseCoordMessage(canvasCoords);
+        this.updateCollisionObject(canvasCoords);
+      }
     });
 
     //listener for radio
@@ -163,18 +165,19 @@ class TileMapEditor {
   }
 
   private handleCellSizeChange(e: Event, dimension: "height" | "width"): any {
+    // replace width/height property with inut value
     this.cellSize = {
       ...this.cellSize,
       [dimension]: parseInt((e.target! as HTMLInputElement).value),
     };
-    this.walls = {};
+    this.walls = {}; // reset collision layer when grid dimensions change
     this.draw(() => {
       this.drawCellGrid();
       this.drawCollisionLayer();
     });
   }
 
-  private updateStatusMessage([x, y]: number[]) {
+  private updateMouseCoordMessage([x, y]: number[]) {
     this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
       x
     )}, y:  ${Math.floor(y)}}<br>Cell Coords: ${this.getCellCoords([x, y])}`;
@@ -184,12 +187,12 @@ class TileMapEditor {
     const [cellX, cellY] = this.getCellCoords(canvasCoords);
 
     if (this.isAddingTiles) {
-      if (!this.walls[UTILS.asGridCoord(cellX, cellY)]) {
-        this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
-      } else {
+      if (this.walls[UTILS.asGridCoord(cellX, cellY)]) {
         return;
       }
+      this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
     } else {
+      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#description
       delete this.walls[UTILS.asGridCoord(cellX, cellY)];
     }
 
