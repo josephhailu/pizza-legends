@@ -7,24 +7,25 @@ interface TileMapEditorConfig {
 
 class TileMapEditor {
   cssScaleFactor: number;
-  canvases: Canvases;
 
+  canvases: Canvases;
+  isAddingTiles: boolean;
+
+  selectedFile?: File;
   fileElement: HTMLInputElement;
-  imagePropertiesElement: HTMLParagraphElement;
+
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
   opacityElement: HTMLInputElement;
-
   messageElement: HTMLParagraphElement;
 
   image: HTMLImageElement;
-  isLoaded: boolean = false;
-  selectedFile?: File;
+  imagePropertiesElement: HTMLParagraphElement;
+  isImageLoaded: boolean = false;
 
   cellSize: {width: number; height: number};
   walls: {[x: string]: boolean};
 
-  isAddingTiles: boolean;
   constructor({cssScaleFactor = 3}: TileMapEditorConfig) {
     this.cssScaleFactor = cssScaleFactor;
     this.canvases = {
@@ -54,7 +55,7 @@ class TileMapEditor {
     this.image = new Image();
 
     this.image.onload = () => {
-      this.isLoaded = true;
+      this.isImageLoaded = true;
       Object.values(this.canvases).forEach((c) => {
         c.width = this.image.width;
         c.height = this.image.height;
@@ -110,9 +111,9 @@ class TileMapEditor {
 
     //listener for grid canvas click
     this.canvases.collisionGridCanvas.addEventListener("mousedown", (e) => {
-      let rect = this.canvases.collisionGridCanvas.getBoundingClientRect();
+      const rect = this.canvases.collisionGridCanvas.getBoundingClientRect();
 
-      let canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+      const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
       this.updateStatusMessage(canvasCoords);
       this.updateCollisionObject(canvasCoords);
     });
@@ -180,7 +181,7 @@ class TileMapEditor {
   }
 
   private updateCollisionObject(canvasCoords: number[]) {
-    let [cellX, cellY] = this.getCellCoords(canvasCoords);
+    const [cellX, cellY] = this.getCellCoords(canvasCoords);
 
     if (this.isAddingTiles) {
       if (!this.walls[UTILS.asGridCoord(cellX, cellY)]) {
@@ -213,7 +214,7 @@ class TileMapEditor {
   }
 
   private drawMap() {
-    let mapCtx = this.canvases.mapCanvas.getContext("2d")!;
+    const mapCtx = this.canvases.mapCanvas.getContext("2d")!;
 
     mapCtx.clearRect(
       0,
@@ -225,9 +226,9 @@ class TileMapEditor {
   }
 
   private drawCellGrid() {
-    let cellGridCtx = this.canvases.cellGridCanvas.getContext("2d")!;
-    let width = this.canvases.mapCanvas.width;
-    let height = this.canvases.mapCanvas.height;
+    const cellGridCtx = this.canvases.cellGridCanvas.getContext("2d")!;
+    const width = this.canvases.mapCanvas.width;
+    const height = this.canvases.mapCanvas.height;
     cellGridCtx.clearRect(0, 0, width, height);
 
     // draw vertical grid lines
@@ -244,7 +245,7 @@ class TileMapEditor {
   }
 
   private drawCollisionLayer() {
-    let collisionCtx = this.canvases.collisionGridCanvas.getContext("2d")!;
+    const collisionCtx = this.canvases.collisionGridCanvas.getContext("2d")!;
     collisionCtx.clearRect(
       0,
       0,
@@ -255,7 +256,7 @@ class TileMapEditor {
     collisionCtx.fillStyle = "green";
     collisionCtx.globalAlpha = 0.3;
     Object.keys(this.walls).forEach((key) => {
-      const [x, y] = key.split(",").map((n) => parseInt(n));
+      const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
       collisionCtx.fillRect(x, y, this.cellSize.width, this.cellSize.height);
     });
   }
