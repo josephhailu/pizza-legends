@@ -63,12 +63,13 @@ class TileMapEditor {
       this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px Height: ${this.image.height}px`;
       this.walls = {};
 
-      this.startApp();
+      this.draw();
     };
 
     this.isAddingTiles = (
       document.querySelector("#add")! as HTMLInputElement
     ).checked;
+
     this.cellSize = {
       height: parseInt(this.widthElement.value) || 16,
       width: parseInt(this.heightElement.value) || 16,
@@ -112,8 +113,8 @@ class TileMapEditor {
       let rect = this.canvases.collisionGridCanvas.getBoundingClientRect();
 
       let canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
-      this.updateInfo(canvasCoords);
-      this.drawCollisionRect(canvasCoords);
+      this.updateStatusMessage(canvasCoords);
+      this.updateCollisionObject(canvasCoords);
     });
 
     //listener for radio
@@ -121,10 +122,7 @@ class TileMapEditor {
       element.addEventListener(
         "click",
         (e) => {
-          if ((e.target! as HTMLInputElement).matches("input[type='radio']")) {
-            this.isAddingTiles =
-              (e.target! as HTMLInputElement).value === "Add";
-          }
+          this.isAddingTiles = (e.target! as HTMLInputElement).value === "Add";
         },
         false
       );
@@ -135,82 +133,25 @@ class TileMapEditor {
     document.querySelector("#exportJSON")!.addEventListener(
       "click",
       () => {
-        if (!!this.walls && Object.values(this.walls).length !== 0) {
+        if (!!this.walls && Object.values(this.walls).length > 0) {
+          const link = document.querySelector("#exportJSON")!;
           let data =
             "text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(this.walls));
-          document
-            .querySelector("#exportJSON")!
-            .setAttribute("href", "data:" + data);
+          link.setAttribute("href", "data:" + data);
 
-          document
-            .querySelector("#exportJSON")!
-            .setAttribute("download", "data.json");
+          link.setAttribute("download", "data.json");
         }
       },
       false
     );
   }
 
-  drawCollisionRect(canvasCoords: number[]) {
-    let [cellX, cellY] = this.getCellCoords(canvasCoords);
-
-    //top left canvas coords of cell
-    let canvasX = cellX * this.cellSize.width;
-    let canvasY = cellY * this.cellSize.height;
-
-    if (this.isAddingTiles) {
-      if (!this.walls[UTILS.asGridCoord(cellX, cellY)]) {
-        this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
-        this.drawWall(canvasX, canvasY);
-      } else {
-        return;
-      }
-    } else {
-      this.drawWall(canvasX, canvasY, false);
-      delete this.walls[UTILS.asGridCoord(cellX, cellY)];
-    }
-  }
-
-  private drawWall(x: number, y: number, adding: boolean = true) {
-    let collisionCtx = this.canvases.collisionGridCanvas.getContext("2d")!;
-    if (adding) {
-      collisionCtx.fillStyle = "green";
-      collisionCtx.globalAlpha = 0.3;
-      collisionCtx.fillRect(x, y, this.cellSize.width, this.cellSize.height);
-    } else {
-      collisionCtx.fillStyle = "rgba(0, 0, 0, 0)";
-      collisionCtx.clearRect(x, y, this.cellSize.width, this.cellSize.height);
-    }
-  }
-
-  private updateInfo([x, y]: number[]) {
-    this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
-      x
-    )}, y:  ${Math.floor(y)}}<br>Cell Coords: ${this.getCellCoords([x, y])}`;
-  }
-
-  getCellCoords([x, y]: number[]) {
-    return [
-      Math.floor(x / this.cssScaleFactor / this.cellSize.width),
-      Math.floor(y / this.cssScaleFactor / this.cellSize.height),
-    ];
-  }
-
-  handleCellSizeChange(e: Event, dimension: "height" | "width"): any {
-    this.cellSize = {
-      ...this.cellSize,
-      [dimension]: parseInt((e.target! as HTMLInputElement).value),
-    };
-    this.walls = {};
-    this.drawCellGrid();
-  }
-
   /**
    * https://stackoverflow.com/a/56140769/11449115
    * @param e
    */
-  handleFile(e: Event) {
+  private handleFile(e: Event) {
     this.selectedFile = (e.target as HTMLInputElement).files![0];
     const reader = new FileReader();
     reader.readAsDataURL(this.selectedFile);
@@ -220,44 +161,103 @@ class TileMapEditor {
     };
   }
 
-  startApp() {
-    Object.values(this.canvases).forEach((c) => {
-      let ctx = c.getContext("2d")!;
-      ctx.clearRect(0, 0, c.width, c.height);
+  private handleCellSizeChange(e: Event, dimension: "height" | "width"): any {
+    this.cellSize = {
+      ...this.cellSize,
+      [dimension]: parseInt((e.target! as HTMLInputElement).value),
+    };
+    this.walls = {};
+    this.draw(() => {
+      this.drawCellGrid();
+      this.drawCollisionLayer();
     });
+  }
 
+  private updateStatusMessage([x, y]: number[]) {
+    this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
+      x
+    )}, y:  ${Math.floor(y)}}<br>Cell Coords: ${this.getCellCoords([x, y])}`;
+  }
+
+  private updateCollisionObject(canvasCoords: number[]) {
+    let [cellX, cellY] = this.getCellCoords(canvasCoords);
+
+    if (this.isAddingTiles) {
+      if (!this.walls[UTILS.asGridCoord(cellX, cellY)]) {
+        this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
+      } else {
+        return;
+      }
+    } else {
+      delete this.walls[UTILS.asGridCoord(cellX, cellY)];
+    }
+
+    this.draw(() => this.drawCollisionLayer());
+  }
+
+  private getCellCoords([x, y]: number[]) {
+    return [
+      Math.floor(x / this.cssScaleFactor / this.cellSize.width),
+      Math.floor(y / this.cssScaleFactor / this.cellSize.height),
+    ];
+  }
+
+  private draw(
+    callback: () => void = () => {
+      this.drawMap();
+      this.drawCellGrid();
+      this.drawCollisionLayer();
+    }
+  ) {
+    callback();
+  }
+
+  private drawMap() {
     let mapCtx = this.canvases.mapCanvas.getContext("2d")!;
-    mapCtx.drawImage(this.image, 0, 0);
 
-    //draw grid based on image
-    this.drawCellGrid();
+    mapCtx.clearRect(
+      0,
+      0,
+      this.canvases.mapCanvas.width,
+      this.canvases.mapCanvas.height
+    );
+    mapCtx.drawImage(this.image, 0, 0);
   }
 
   private drawCellGrid() {
-    // draw vertical grid lines
-    this.drawGridLines(this.cellSize.width);
-    // draw horizontal grid lines
-    this.drawGridLines(this.cellSize.height);
-  }
-
-  drawGridLines(axisCellSize: number) {
     let cellGridCtx = this.canvases.cellGridCanvas.getContext("2d")!;
     let width = this.canvases.mapCanvas.width;
     let height = this.canvases.mapCanvas.height;
-
     cellGridCtx.clearRect(0, 0, width, height);
+
+    // draw vertical grid lines
     cellGridCtx.fillStyle = "blue";
-    for (let index = 1; index <= width / axisCellSize; index++) {
-      cellGridCtx.fillRect(index * axisCellSize, 0, 0.5, height);
+    for (let index = 1; index <= width / this.cellSize.width; index++) {
+      cellGridCtx.fillRect(index * this.cellSize.width, 0, 0.5, height);
+    }
+
+    // draw horizontal grid lines
+    cellGridCtx.fillStyle = "orange";
+    for (let index = 1; index <= height / this.cellSize.height; index++) {
+      cellGridCtx.fillRect(0, index * this.cellSize.height, width, 0.5);
     }
   }
 
-  draw() {
-    //draw canvas layers
-    //draw image layer
-    //draw cell grid layer
-    this.drawCellGrid();
-    //draw collision grid layer
+  private drawCollisionLayer() {
+    let collisionCtx = this.canvases.collisionGridCanvas.getContext("2d")!;
+    collisionCtx.clearRect(
+      0,
+      0,
+      this.canvases.collisionGridCanvas.width,
+      this.canvases.collisionGridCanvas.height
+    );
+
+    collisionCtx.fillStyle = "green";
+    collisionCtx.globalAlpha = 0.3;
+    Object.keys(this.walls).forEach((key) => {
+      const [x, y] = key.split(",").map((n) => parseInt(n));
+      collisionCtx.fillRect(x, y, this.cellSize.width, this.cellSize.height);
+    });
   }
 }
 
