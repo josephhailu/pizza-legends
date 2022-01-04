@@ -23,7 +23,9 @@ class TileMapEditor {
   selectedFile?: File;
 
   cellSize: {width: number; height: number};
+  walls: {[x: string]: boolean};
 
+  isAddingTiles: boolean;
   constructor({cssScaleFactor = 3}: TileMapEditorConfig) {
     this.cssScaleFactor = cssScaleFactor;
     this.canvases = {
@@ -46,7 +48,7 @@ class TileMapEditor {
       "#opacity"
     ) as HTMLInputElement;
 
-    //   this. addElement = document.querySelector("#add") as HTMLInputElement;
+    // this.addElement = document.querySelector("#wall") as HTMLInputElement;
     this.messageElement = document.querySelector(
       "#message"
     ) as HTMLInputElement;
@@ -61,14 +63,20 @@ class TileMapEditor {
       });
 
       this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px\n Height: ${this.image.height}px`;
+      this.walls = {};
 
       this.startApp();
     };
 
+    this.isAddingTiles = (
+      document.querySelector("#add")! as HTMLInputElement
+    ).checked;
     this.cellSize = {
       height: parseInt(this.widthElement.value) || 16,
       width: parseInt(this.heightElement.value) || 16,
     };
+
+    this.walls = {};
   }
 
   init() {
@@ -104,15 +112,60 @@ class TileMapEditor {
     //listener for grid canvas click
     this.canvases.collisionGridCanvas.addEventListener("mousedown", (e) => {
       let rect = this.canvases.collisionGridCanvas.getBoundingClientRect();
-      this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
-        e.clientX - rect.left
-      )}, y:  ${Math.floor(
-        e.clientY - rect.top
-      )}}<br>Cell Coords: ${this.getCellCoords([
-        e.clientX - rect.left,
-        e.clientY - rect.top,
-      ])}`;
+
+      let canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+      this.updateInfo(canvasCoords);
+      this.drawCollisionRect(canvasCoords);
     });
+
+    //listener for file load
+    document.querySelectorAll('input[name="wall"]')!.forEach((element) => {
+      element.addEventListener(
+        "click",
+        (e) => {
+          if ((e.target! as HTMLInputElement).matches("input[type='radio']")) {
+            this.isAddingTiles =
+              (e.target! as HTMLInputElement).value === "Add";
+          }
+        },
+        false
+      );
+    });
+  }
+
+  drawCollisionRect(canvasCoords: number[]) {
+    let [x, y] = this.getCellCoords(canvasCoords);
+
+    let [gridX, gridY] = [x * this.cellSize.width, y * this.cellSize.height];
+    if (this.isAddingTiles) {
+      if (!this.walls[UTILS.asGridCoord(x, y)]) {
+        this.walls[UTILS.asGridCoord(x, y)] = true;
+        this.drawWall(gridX, gridY);
+      } else {
+        return;
+      }
+    } else {
+      this.drawWall(gridX, gridY, false);
+      delete this.walls[UTILS.asGridCoord(x, y)];
+    }
+  }
+
+  private drawWall(x: number, y: number, adding: boolean = true) {
+    let collisionCtx = this.canvases.collisionGridCanvas.getContext("2d")!;
+    if (adding) {
+      collisionCtx.fillStyle = "green";
+      collisionCtx.globalAlpha = 0.3;
+      collisionCtx.fillRect(x, y, this.cellSize.width, this.cellSize.height);
+    } else {
+      collisionCtx.fillStyle = "rgba(0, 0, 0, 0)";
+      collisionCtx.clearRect(x, y, this.cellSize.width, this.cellSize.height);
+    }
+  }
+
+  private updateInfo([x, y]: number[]) {
+    this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
+      x
+    )}, y:  ${Math.floor(y)}}<br>Cell Coords: ${this.getCellCoords([x, y])}`;
   }
 
   getCellCoords([x, y]: number[]) {
