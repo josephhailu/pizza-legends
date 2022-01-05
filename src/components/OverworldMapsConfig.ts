@@ -1,7 +1,8 @@
+import { OverworldMapConfig } from "./OverworldMap";
 import Person from "./Person";
 import { UTILS, ANIMATIONS } from "./utils";
 
-export const OverworldMapsConfig = {
+export const OverworldMapsConfig: Record<string, OverworldMapConfig> = {
   DemoRoom: {
     lowerSrc: "./images/maps/DemoLower.png",
     upperSrc: "./images/maps/DemoUpper.png",

@@ -8,8 +8,24 @@ export type Walls = {
   [coordinateString: string]: boolean;
 };
 
-export type CutsceneSpaces = {
-  [coordinateString: string]: Record<string, Record<string, Behaviour[]>>;
+export type CutsceneSpaces = Record<string, Record<"events", Behaviour[]>[]>;
+const c = {
+  "16,32": [
+    {
+      events: [
+        { type: "textMessage", text: "Hey!", faceHero: "me" },
+        { who: "me", type: "walk", direction: "left" },
+      ],
+    },
+  ],
+  "32,0": [
+    {
+      events: [
+        { type: "changeMap", map: "Kitchen" },
+        { who: "me", type: "walk", direction: "left" },
+      ],
+    },
+  ],
 };
 
 export type OverworldMapConfig = {
