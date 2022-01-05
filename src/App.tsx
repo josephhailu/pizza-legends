@@ -1,9 +1,19 @@
 import React, { useEffect } from "react";
 import "./styles/global.css";
 import "./styles/edit.css";
+import { UTILS } from "./components/utils";
 
 function App() {
-  const [appState, setAppState] = React.useState({
+  const [appState, setAppState] = React.useState<{
+    cssScaleFactor: number;
+    imageProperties: string;
+    mouseEventDetails: string;
+    isAddingTiles: boolean;
+    isImageLoaded: boolean;
+    cellSize: { width: number; height: number };
+    opacity: number;
+    walls: { [x: string]: boolean };
+  }>({
     cssScaleFactor: 3,
     imageProperties: "",
     mouseEventDetails: "",
@@ -14,7 +24,7 @@ function App() {
     walls: {},
   });
 
-  const [mapImage, setMapImage] = React.useState(new Image());
+  const [mapImage] = React.useState(new Image());
   mapImage.onload = () => {
     setAppState((prevState) => {
       return {
@@ -95,6 +105,41 @@ function App() {
     }
   };
 
+  function updateMouseCoordMessage([x, y]: number[]) {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        mouseEventDetails: `Mouse Coords: { x:  ${Math.floor(
+          x
+        )}, y:  ${Math.floor(y)}} Cell Coords: ${getCellCoords([x, y])}`,
+      };
+    });
+  }
+
+  function updateCollisionObject(canvasCoords: number[]) {
+    const [cellX, cellY] = getCellCoords(canvasCoords);
+
+    if (appState.isAddingTiles) {
+      if (appState.walls[UTILS.asGridCoord(cellX, cellY)]) {
+        return;
+      }
+      appState.walls[UTILS.asGridCoord(cellX, cellY)] = true;
+    } else {
+      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#description
+      setAppState((prevState) => {
+        delete prevState.walls[UTILS.asGridCoord(cellX, cellY)];
+        return prevState;
+      });
+    }
+  }
+
+  function getCellCoords([x, y]: number[]) {
+    return [
+      Math.floor(x / appState.cssScaleFactor / appState.cellSize.width),
+      Math.floor(y / appState.cssScaleFactor / appState.cellSize.height),
+    ];
+  }
+  console.log(appState.walls);
   return (
     <div className="App">
       <div className="container">
@@ -120,8 +165,11 @@ function App() {
         </div>
         <Canvases
           mapImage={mapImage}
-          walls={appState.walls}
           cellSize={appState.cellSize}
+          opacity={appState.opacity}
+          walls={appState.walls}
+          updateCollisionObject={updateCollisionObject}
+          updateMouseCoordMessage={updateMouseCoordMessage}
         />
       </div>
     </div>
@@ -258,13 +306,20 @@ const ExportJSON = ({
 
 const Canvases = ({
   mapImage,
-  walls,
   cellSize,
+  opacity,
+  walls,
+  updateMouseCoordMessage,
+  updateCollisionObject,
 }: {
   mapImage: HTMLImageElement;
   cellSize: { width: number; height: number };
-  walls: any;
+  opacity: number;
+  walls: { [x: string]: boolean };
+  updateMouseCoordMessage: (canvasCoords: number[]) => void;
+  updateCollisionObject: (canvasCoords: number[]) => void;
 }): JSX.Element => {
+  const [isImageLoaded, setIsImageLoaded] = React.useState(false);
   const canvases = {
     mapCanvas: React.useRef<HTMLCanvasElement>(null),
     gridCanvas: React.useRef<HTMLCanvasElement>(null),
@@ -273,6 +328,8 @@ const Canvases = ({
 
   React.useEffect(() => {
     //set canvas dimensions
+    setIsImageLoaded(false);
+
     Object.values(canvases).forEach((c) => {
       c.current!.width = mapImage.width;
       c.current!.height = mapImage.height;
@@ -282,11 +339,11 @@ const Canvases = ({
   }, [mapImage.src]);
 
   React.useEffect(() => {
-    drawGridLayer();
+    draw(drawGridLayer);
   }, [cellSize]);
 
   React.useEffect(() => {
-    drawCollisionLayer();
+    draw(drawCollisionLayer);
   }, [walls]);
 
   const drawMapLayer = () => {
@@ -299,6 +356,7 @@ const Canvases = ({
       canvases.mapCanvas.current!.height
     );
     mapCtx.drawImage(mapImage, 0, 0);
+    setIsImageLoaded(true);
   };
 
   const drawGridLayer = () => {
@@ -320,7 +378,22 @@ const Canvases = ({
     }
   };
 
-  const drawCollisionLayer = () => {};
+  const drawCollisionLayer = () => {
+    const collisionCtx = canvases.collisionCanvas.current!.getContext("2d")!;
+    collisionCtx.clearRect(
+      0,
+      0,
+      canvases.collisionCanvas.current!.width,
+      canvases.collisionCanvas.current!.height
+    );
+
+    collisionCtx.fillStyle = "green";
+    collisionCtx.globalAlpha = 0.3;
+    Object.keys(walls).forEach((key) => {
+      const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
+      collisionCtx.fillRect(x, y, cellSize.width, cellSize.height);
+    });
+  };
 
   const draw = (
     callback: () => void = () => {
@@ -332,6 +405,17 @@ const Canvases = ({
     callback();
   };
 
+  const handleCollisionCanvasMouseDown = (
+    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
+  ) => {
+    if (isImageLoaded) {
+      const rect = canvases.collisionCanvas.current!.getBoundingClientRect();
+
+      const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+      updateMouseCoordMessage(canvasCoords);
+      updateCollisionObject(canvasCoords);
+    }
+  };
   return (
     <div className="canvases">
       <canvas className="tilemap-canvas" ref={canvases.mapCanvas}></canvas>
@@ -339,6 +423,8 @@ const Canvases = ({
       <canvas
         className="collision-canvas"
         ref={canvases.collisionCanvas}
+        onMouseDown={handleCollisionCanvasMouseDown}
+        style={{ opacity: opacity }}
       ></canvas>
     </div>
   );
