@@ -1,13 +1,15 @@
-interface TextMessageParams {
+import KeyPressListener from "./KeyPressListener";
+
+export interface TextMessageParams {
   text: string;
   onComplete: () => void;
 }
-class TextMessage {
+export default class TextMessage {
   text: string;
   element: HTMLElement | null;
   onComplete: () => void;
   actionListener?: KeyPressListener;
-  constructor({text, onComplete}: TextMessageParams) {
+  constructor({ text, onComplete }: TextMessageParams) {
     this.text = text;
     this.onComplete = onComplete;
     this.element = null;

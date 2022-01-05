@@ -1,8 +1,17 @@
-type OverworldConfig = {
+import DirectionInput from "./DirectionInput";
+import FixedStepEngine from "./FixedStepEngine";
+import GameObject from "./GameObject";
+import KeyPressListener from "./KeyPressListener";
+import { CUSTOM_EVENTS } from "./OverworldEvent";
+import OverworldMap, { OverworldMapConfig } from "./OverworldMap";
+import { OverworldMapsConfig } from "./OverworldMapsConfig";
+import Person from "./Person";
+
+export type OverworldConfig = {
   element: HTMLElement;
 };
 
-class Overworld {
+export default class Overworld {
   element: HTMLElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -78,7 +87,7 @@ class Overworld {
   }
 
   init() {
-    this.startMap(window.OverworldMaps.DemoRoom);
+    this.startMap(OverworldMapsConfig.DemoRoom);
     this.cameraPerson = this.map!.gameObjects.hero;
 
     this.directionInput = new DirectionInput();

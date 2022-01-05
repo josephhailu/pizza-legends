@@ -1,17 +1,21 @@
-type PersonConfig = GameObjectConfig & {
+import GameObject, { GameObjectConfig, Behaviour } from "./GameObject";
+import { CUSTOM_EVENTS } from "./OverworldEvent";
+import OverworldMap from "./OverworldMap";
+
+export type PersonConfig = GameObjectConfig & {
   isPlayerControlled?: boolean;
 };
-type Directions = "up" | "down" | "left" | "right";
-type DirectionUpdate = {
+export type Directions = "up" | "down" | "left" | "right";
+export type DirectionUpdate = {
   [key in Directions]: [property: "x" | "y", change: -1 | 1];
 };
 
-type SpriteUpdateState = {
+export type SpriteUpdateState = {
   map: OverworldMap;
   arrow?: Directions;
 };
 
-class Person extends GameObject {
+export default class Person extends GameObject {
   movingProgressRemaining: number;
   isStanding = false;
   directionUpdate: DirectionUpdate;

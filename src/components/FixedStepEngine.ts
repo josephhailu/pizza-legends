@@ -1,4 +1,4 @@
-class FixedStepEngine {
+export default class FixedStepEngine {
   updateFps: number;
   renderFps: number;
   update: (delta: number) => any;

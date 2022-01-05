@@ -1,11 +1,14 @@
-type CanvasTypes = "mapCanvas" | "cellGridCanvas" | "collisionGridCanvas";
-type Canvases = Record<CanvasTypes, HTMLCanvasElement>;
+export type CanvasTypes =
+  | "mapCanvas"
+  | "cellGridCanvas"
+  | "collisionGridCanvas";
+export type Canvases = Record<CanvasTypes, HTMLCanvasElement>;
 
-interface TileMapEditorConfig {
+export interface TileMapEditorConfig {
   cssScaleFactor: number;
 }
 
-class TileMapEditor {
+export default class TileMapEditor {
   cssScaleFactor: number;
 
   canvases: Canvases;
@@ -23,10 +26,10 @@ class TileMapEditor {
   imagePropertiesElement: HTMLParagraphElement;
   isImageLoaded: boolean = false;
 
-  cellSize: {width: number; height: number};
-  walls: {[x: string]: boolean};
+  cellSize: { width: number; height: number };
+  walls: { [x: string]: boolean };
 
-  constructor({cssScaleFactor = 3}: TileMapEditorConfig) {
+  constructor({ cssScaleFactor = 3 }: TileMapEditorConfig) {
     this.cssScaleFactor = cssScaleFactor;
     this.canvases = {
       mapCanvas: document.querySelector(".tilemap-canvas") as HTMLCanvasElement,
@@ -266,6 +269,6 @@ class TileMapEditor {
 }
 
 window.onload = function () {
-  const tme = new TileMapEditor({cssScaleFactor: 3});
+  const tme = new TileMapEditor({ cssScaleFactor: 3 });
   tme.init();
 };
