@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./styles/global.css";
 import "./styles/edit.css";
 import { UTILS } from "./components/utils";
@@ -320,49 +320,38 @@ const Canvases = ({
   updateCollisionObject: (canvasCoords: number[]) => void;
 }): JSX.Element => {
   const [isImageLoaded, setIsImageLoaded] = React.useState(false);
-  const canvases = {
-    mapCanvas: React.useRef<HTMLCanvasElement>(null),
-    gridCanvas: React.useRef<HTMLCanvasElement>(null),
-    collisionCanvas: React.useRef<HTMLCanvasElement>(null),
-  };
-
+  const mapCanvas = React.useRef<HTMLCanvasElement>(null);
+  const gridCanvas = React.useRef<HTMLCanvasElement>(null);
+  const collisionCanvas = React.useRef<HTMLCanvasElement>(null);
   React.useEffect(() => {
     //set canvas dimensions
     setIsImageLoaded(false);
 
-    Object.values(canvases).forEach((c) => {
-      c.current!.width = mapImage.width;
-      c.current!.height = mapImage.height;
-    });
+    mapCanvas.current!.width = mapImage.width;
+    mapCanvas.current!.height = mapImage.height;
 
+    gridCanvas.current!.width = mapImage.width;
+    gridCanvas.current!.height = mapImage.height;
+
+    collisionCanvas.current!.width = mapImage.width;
+    collisionCanvas.current!.height = mapImage.height;
+  }, [mapImage.src, mapImage.width, mapImage.height]);
+
+  React.useEffect(() => {
     draw();
-  }, [mapImage.src]);
-
-  React.useEffect(() => {
-    draw(drawGridLayer);
-  }, [cellSize]);
-
-  React.useEffect(() => {
-    draw(drawCollisionLayer);
-  }, [walls]);
-
+  }, [mapImage.src, opacity, walls, cellSize]);
   const drawMapLayer = () => {
-    const mapCtx = canvases.mapCanvas.current!.getContext("2d")!;
+    const mapCtx = mapCanvas.current!.getContext("2d")!;
 
-    mapCtx.clearRect(
-      0,
-      0,
-      canvases.mapCanvas.current!.width,
-      canvases.mapCanvas.current!.height
-    );
+    mapCtx.clearRect(0, 0, mapCanvas.current!.width, mapCanvas.current!.height);
     mapCtx.drawImage(mapImage, 0, 0);
     setIsImageLoaded(true);
   };
 
   const drawGridLayer = () => {
-    const cellGridCtx = canvases.gridCanvas.current!.getContext("2d")!;
-    const width = canvases.mapCanvas.current!.width;
-    const height = canvases.mapCanvas.current!.height;
+    const cellGridCtx = gridCanvas.current!.getContext("2d")!;
+    const width = mapCanvas.current!.width;
+    const height = mapCanvas.current!.height;
     cellGridCtx.clearRect(0, 0, width, height);
 
     // draw vertical grid lines
@@ -379,12 +368,12 @@ const Canvases = ({
   };
 
   const drawCollisionLayer = () => {
-    const collisionCtx = canvases.collisionCanvas.current!.getContext("2d")!;
+    const collisionCtx = collisionCanvas.current!.getContext("2d")!;
     collisionCtx.clearRect(
       0,
       0,
-      canvases.collisionCanvas.current!.width,
-      canvases.collisionCanvas.current!.height
+      collisionCanvas.current!.width,
+      collisionCanvas.current!.height
     );
 
     collisionCtx.fillStyle = "green";
@@ -409,7 +398,7 @@ const Canvases = ({
     e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
     if (isImageLoaded) {
-      const rect = canvases.collisionCanvas.current!.getBoundingClientRect();
+      const rect = collisionCanvas.current!.getBoundingClientRect();
 
       const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
       updateMouseCoordMessage(canvasCoords);
@@ -418,13 +407,16 @@ const Canvases = ({
   };
   return (
     <div className="canvases">
-      <canvas className="tilemap-canvas" ref={canvases.mapCanvas}></canvas>
-      <canvas className="cell-grid-canvas" ref={canvases.gridCanvas}></canvas>
+      <canvas className="tilemap-canvas" ref={mapCanvas}></canvas>
+      <canvas
+        className="cell-grid-canvas"
+        ref={gridCanvas}
+        style={{ opacity: opacity }}
+      ></canvas>
       <canvas
         className="collision-canvas"
-        ref={canvases.collisionCanvas}
+        ref={collisionCanvas}
         onMouseDown={handleCollisionCanvasMouseDown}
-        style={{ opacity: opacity }}
       ></canvas>
     </div>
   );
