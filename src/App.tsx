@@ -12,24 +12,19 @@ function App() {
     cellSize: { width: 16, height: 16 },
     opacity: 0.5,
     walls: {},
-    mapImage: new Image(),
-    mapImageSrc: "",
   });
 
-  React.useEffect(() => {
-    appState.mapImage.onload = () => {
-      console.log("loaded new image");
-
-      setAppState((prevState) => {
-        return {
-          ...prevState,
-          isImageLoaded: true,
-          imageProperties: `Width :  ${appState.mapImage.width}px Height: ${appState.mapImage.height}px`,
-          walls: {},
-        };
-      });
-    };
-  }, [appState.mapImageSrc]);
+  const [mapImage, setMapImage] = React.useState(new Image());
+  mapImage.onload = () => {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        isImageLoaded: true,
+        imageProperties: `Width :  ${mapImage.width}px Height: ${mapImage.height}px`,
+        walls: {},
+      };
+    });
+  };
 
   const handleFileOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files![0];
@@ -37,12 +32,7 @@ function App() {
     reader.readAsDataURL(selectedFile);
 
     reader.onload = (_event) => {
-      setAppState((prevState) => {
-        return {
-          ...prevState,
-          mapImageSrc: reader.result as string,
-        };
-      });
+      mapImage.src = reader.result as string;
     };
   };
 
@@ -128,7 +118,11 @@ function App() {
         <div className="info">
           <p id="message">{appState.mouseEventDetails}</p>
         </div>
-        <Canvases mapImage={appState.mapImage} />
+        <Canvases
+          mapImage={mapImage}
+          walls={appState.walls}
+          cellSize={appState.cellSize}
+        />
       </div>
     </div>
   );
@@ -264,30 +258,88 @@ const ExportJSON = ({
 
 const Canvases = ({
   mapImage,
+  walls,
+  cellSize,
 }: {
   mapImage: HTMLImageElement;
+  cellSize: { width: number; height: number };
+  walls: any;
 }): JSX.Element => {
-  const mapCanvas = React.useRef<HTMLCanvasElement>(null);
-  const cellCanvas = React.useRef<HTMLCanvasElement>(null);
-  const collisionCanvas = React.useRef<HTMLCanvasElement>(null);
+  const canvases = {
+    mapCanvas: React.useRef<HTMLCanvasElement>(null),
+    gridCanvas: React.useRef<HTMLCanvasElement>(null),
+    collisionCanvas: React.useRef<HTMLCanvasElement>(null),
+  };
 
   React.useEffect(() => {
-    //when we get a new image rerender canvases
-    drawMap();
-  }, [mapImage]);
+    //set canvas dimensions
+    Object.values(canvases).forEach((c) => {
+      c.current!.width = mapImage.width;
+      c.current!.height = mapImage.height;
+    });
 
-  const drawMap = () => {
-    const mapCtx = mapCanvas.current!.getContext("2d")!;
+    draw();
+  }, [mapImage.src]);
 
-    mapCtx.clearRect(0, 0, mapCanvas.current!.width, mapCanvas.current!.height);
+  React.useEffect(() => {
+    drawGridLayer();
+  }, [cellSize]);
+
+  React.useEffect(() => {
+    drawCollisionLayer();
+  }, [walls]);
+
+  const drawMapLayer = () => {
+    const mapCtx = canvases.mapCanvas.current!.getContext("2d")!;
+
+    mapCtx.clearRect(
+      0,
+      0,
+      canvases.mapCanvas.current!.width,
+      canvases.mapCanvas.current!.height
+    );
     mapCtx.drawImage(mapImage, 0, 0);
+  };
+
+  const drawGridLayer = () => {
+    const cellGridCtx = canvases.gridCanvas.current!.getContext("2d")!;
+    const width = canvases.mapCanvas.current!.width;
+    const height = canvases.mapCanvas.current!.height;
+    cellGridCtx.clearRect(0, 0, width, height);
+
+    // draw vertical grid lines
+    cellGridCtx.fillStyle = "blue";
+    for (let index = 1; index <= width / cellSize.width; index++) {
+      cellGridCtx.fillRect(index * cellSize.width, 0, 0.5, height);
+    }
+
+    // draw horizontal grid lines
+    cellGridCtx.fillStyle = "orange";
+    for (let index = 1; index <= height / cellSize.height; index++) {
+      cellGridCtx.fillRect(0, index * cellSize.height, width, 0.5);
+    }
+  };
+
+  const drawCollisionLayer = () => {};
+
+  const draw = (
+    callback: () => void = () => {
+      drawMapLayer();
+      drawGridLayer();
+      drawCollisionLayer();
+    }
+  ) => {
+    callback();
   };
 
   return (
     <div className="canvases">
-      <canvas className="tilemap-canvas" ref={mapCanvas}></canvas>
-      <canvas className="cell-grid-canvas" ref={cellCanvas}></canvas>
-      <canvas className="collision-canvas" ref={collisionCanvas}></canvas>
+      <canvas className="tilemap-canvas" ref={canvases.mapCanvas}></canvas>
+      <canvas className="cell-grid-canvas" ref={canvases.gridCanvas}></canvas>
+      <canvas
+        className="collision-canvas"
+        ref={canvases.collisionCanvas}
+      ></canvas>
     </div>
   );
 };
