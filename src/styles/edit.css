@@ -34,10 +34,6 @@ body {
   justify-content: space-between;
 }
 
-.canvases {
-  position: relative;
-  min-width: 80%;
-}
 .info {
   margin: 1rem;
   min-height: 36px;
