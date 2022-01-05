@@ -123,12 +123,31 @@ function App() {
       if (appState.walls[UTILS.asGridCoord(cellX, cellY)]) {
         return;
       }
-      appState.walls[UTILS.asGridCoord(cellX, cellY)] = true;
-    } else {
-      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#description
       setAppState((prevState) => {
-        delete prevState.walls[UTILS.asGridCoord(cellX, cellY)];
-        return prevState;
+        return {
+          ...prevState,
+          walls: {
+            ...prevState.walls,
+            [UTILS.asGridCoord(cellX, cellY)]: true,
+          },
+        };
+      });
+    } else {
+      setAppState((prevState) => {
+        //remove key from walls object for the cell that was clicked
+        const filtered = Object.keys(prevState.walls)
+          .filter((key) => key !== UTILS.asGridCoord(cellX, cellY))
+          .reduce((obj, key) => {
+            return {
+              ...obj,
+              [key]: prevState.walls,
+            };
+          }, {});
+
+        return {
+          ...prevState,
+          walls: filtered,
+        };
       });
     }
   }
@@ -139,7 +158,6 @@ function App() {
       Math.floor(y / appState.cssScaleFactor / appState.cellSize.height),
     ];
   }
-  console.log(appState.walls);
   return (
     <div className="App">
       <div className="container">
@@ -337,18 +355,15 @@ const Canvases = ({
     collisionCanvas.current!.height = mapImage.height;
   }, [mapImage.src, mapImage.width, mapImage.height]);
 
-  React.useEffect(() => {
-    draw();
-  }, [mapImage.src, opacity, walls, cellSize]);
-  const drawMapLayer = () => {
+  const memoDraw = React.useCallback(() => {
+    //draw map
     const mapCtx = mapCanvas.current!.getContext("2d")!;
 
     mapCtx.clearRect(0, 0, mapCanvas.current!.width, mapCanvas.current!.height);
     mapCtx.drawImage(mapImage, 0, 0);
     setIsImageLoaded(true);
-  };
 
-  const drawGridLayer = () => {
+    //draw grid
     const cellGridCtx = gridCanvas.current!.getContext("2d")!;
     const width = mapCanvas.current!.width;
     const height = mapCanvas.current!.height;
@@ -365,9 +380,7 @@ const Canvases = ({
     for (let index = 1; index <= height / cellSize.height; index++) {
       cellGridCtx.fillRect(0, index * cellSize.height, width, 0.5);
     }
-  };
-
-  const drawCollisionLayer = () => {
+    //draw collision object
     const collisionCtx = collisionCanvas.current!.getContext("2d")!;
     collisionCtx.clearRect(
       0,
@@ -382,17 +395,11 @@ const Canvases = ({
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
       collisionCtx.fillRect(x, y, cellSize.width, cellSize.height);
     });
-  };
+  }, [cellSize.height, cellSize.width, mapImage, walls]);
 
-  const draw = (
-    callback: () => void = () => {
-      drawMapLayer();
-      drawGridLayer();
-      drawCollisionLayer();
-    }
-  ) => {
-    callback();
-  };
+  React.useEffect(() => {
+    memoDraw();
+  }, [mapImage.src, opacity, walls, cellSize, memoDraw]);
 
   const handleCollisionCanvasMouseDown = (
     e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
