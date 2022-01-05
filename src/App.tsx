@@ -21,9 +21,9 @@ function App() {
     reader.readAsDataURL(selectedFile);
 
     reader.onload = (_event) => {
-      setAppState((s) => {
+      setAppState((prevState) => {
         return {
-          ...appState,
+          ...prevState,
           mapImageSrc: reader.result as string,
         };
       });
@@ -34,9 +34,9 @@ function App() {
     e: React.ChangeEvent<HTMLInputElement>,
     dimension: "height" | "width"
   ) => {
-    setAppState((s) => {
+    setAppState((prevState) => {
       return {
-        ...appState,
+        ...prevState,
         cellSize: {
           ...appState.cellSize,
           [dimension]: parseInt(e.target.value),
@@ -47,24 +47,43 @@ function App() {
   };
 
   const handleOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAppState((s) => {
+    setAppState((prevState) => {
       return {
-        ...appState,
+        ...prevState,
         opacity: parseFloat(e.target.value),
       };
     });
   };
 
   const handleRadioClick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAppState((s) => {
+    setAppState((prevState) => {
       return {
-        ...appState,
+        ...prevState,
         isAddingTiles: e.target.value === "Add",
       };
     });
   };
 
-  //TODO: add funciton to handle file export
+  const handleExportClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    if (!!appState.walls && Object.keys(appState.walls).length > 0) {
+      const blob = new Blob([JSON.stringify(appState.walls)], {
+        type: "text/json",
+      });
+      const a = document.createElement("a");
+      a.download = "walls.json";
+      a.href = window.URL.createObjectURL(blob);
+      const clickEvent = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      });
+      a.dispatchEvent(clickEvent);
+      a.remove();
+    }
+  };
 
   return (
     <div className="App">
@@ -84,7 +103,7 @@ function App() {
             isAddingTiles={appState.isAddingTiles}
             onRadioClick={handleRadioClick}
           />
-          <ExportJSON />
+          <ExportJSON onExportClick={handleExportClick} />
         </div>
         <div className="info">
           <p id="message">{appState.mouseEventDetails}</p>
@@ -209,12 +228,16 @@ const CollisionRadioOptions = ({
   );
 };
 
-const ExportJSON = (): JSX.Element => {
+const ExportJSON = ({
+  onExportClick,
+}: {
+  onExportClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}): JSX.Element => {
   return (
     <div className="export">
-      <a href="#" id="exportJSON">
+      <button onClick={onExportClick} id="exportJSON">
         Export
-      </a>
+      </button>
     </div>
   );
 };
