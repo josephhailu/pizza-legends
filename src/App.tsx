@@ -3,17 +3,46 @@ import "./styles/global.css";
 import "./styles/edit.css";
 
 function App() {
+  const [appState, setAppState] = React.useState({
+    cssScaleFactor: 3,
+    imageProperties: "",
+    mouseEventDetails: "",
+    isAddingTiles: true,
+    isImageLoaded: false,
+    cellSize: { width: 16, height: 16 },
+    walls: {},
+    mapImageSrc: "",
+  });
+
+  const handleFileOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files![0];
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedFile);
+
+    reader.onload = (_event) => {
+      setAppState((s) => {
+        return {
+          ...appState,
+          mapImageSrc: reader.result! as string,
+        };
+      });
+    };
+  };
+
   return (
     <div className="App">
       <div className="container">
         <div className="controls">
-          <FileUpload />
+          <FileUpload
+            imageProperties={appState.imageProperties}
+            onChange={handleFileOnChange}
+          />
           <CellGridOptions />
           <CollisionRadioOptions />
           <ExportJSON />
         </div>
         <div className="info">
-          <p id="message">{}</p>
+          <p id="message">{appState.mouseEventDetails}</p>
         </div>
         <Canvases />
       </div>
@@ -21,13 +50,25 @@ function App() {
   );
 }
 
-const FileUpload = (): JSX.Element => {
+const FileUpload = ({
+  imageProperties,
+  onChange,
+}: {
+  imageProperties: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}): JSX.Element => {
   return (
     <div className="status">
       <fieldset>
         <caption>Image Properties:</caption>
-        <input type="file" name="upload" id="upload" accept="image/*" />
-        <p id="image-properties">{}</p>
+        <input
+          type="file"
+          name="upload"
+          id="upload"
+          accept="image/*"
+          onChange={onChange}
+        />
+        <p id="image-properties">{imageProperties}</p>
       </fieldset>
     </div>
   );
