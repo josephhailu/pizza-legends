@@ -1,8 +1,8 @@
+import { CUSTOM_EVENTS } from "./CustomEvent";
 import DirectionInput from "./DirectionInput";
 import FixedStepEngine from "./FixedStepEngine";
 import GameObject from "./GameObject";
 import KeyPressListener from "./KeyPressListener";
-import { CUSTOM_EVENTS } from "./OverworldEvent";
 import OverworldMap, { OverworldMapConfig } from "./OverworldMap";
 import { OverworldMapsConfig } from "./OverworldMapsConfig";
 import Person from "./Person";

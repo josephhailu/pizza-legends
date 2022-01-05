@@ -1,3 +1,6 @@
+import Overworld from "./Overworld";
+import { DIMENSIONS } from "./utils";
+
 window.onload = function () {
   const c = document.querySelector(".game-canvas") as HTMLCanvasElement;
   c.width = DIMENSIONS.canvasDimensions.width;

@@ -2,6 +2,7 @@ import GameObject, { Behaviour } from "./GameObject";
 import Overworld from "./Overworld";
 import OverworldEvent from "./OverworldEvent";
 import Person, { Directions } from "./Person";
+import { UTILS } from "./utils";
 
 export type Walls = {
   [coordinateString: string]: boolean;

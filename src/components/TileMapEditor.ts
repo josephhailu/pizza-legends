@@ -1,3 +1,5 @@
+import { UTILS } from "./utils";
+
 export type CanvasTypes =
   | "mapCanvas"
   | "cellGridCanvas"

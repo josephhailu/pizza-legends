@@ -1,10 +1,12 @@
-const DIMENSIONS = {
+import { Directions } from "./Person";
+
+export const DIMENSIONS = {
   /**A cell is 16x16 px */
   gridSize: 16,
   /**Dimensions for different types of sprite designs*/
   spriteSize: {
     /**A person sprite is 32x32 px */
-    person: {width: 32, height: 32},
+    person: { width: 32, height: 32 },
   },
   /** The canvas dimensions are based on designing map assets
    * using 22 horizontal cells and 13 vertical cells.
@@ -20,7 +22,7 @@ const DIMENSIONS = {
   },
 };
 
-const UTILS = {
+export const UTILS = {
   /** Move sprites away from top left (0,0) to a more visually appealing spot in a cell */
   nudgeSprite: {
     /** a person sprite looks nice at (7,18) */
@@ -55,7 +57,7 @@ const UTILS = {
       y += size;
     }
 
-    return {x, y};
+    return { x, y };
   },
 
   oppositeDirection(direction: Directions) {
@@ -79,7 +81,7 @@ const UTILS = {
   },
 };
 
-const ANIMATIONS = {
+export const ANIMATIONS = {
   singleFrame: {
     "idle-down": [[0, 0]],
     "idle-right": [[0, 0]],

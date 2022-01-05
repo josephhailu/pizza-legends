@@ -1,6 +1,7 @@
+import { CUSTOM_EVENTS } from "./CustomEvent";
 import GameObject, { GameObjectConfig, Behaviour } from "./GameObject";
-import { CUSTOM_EVENTS } from "./OverworldEvent";
 import OverworldMap from "./OverworldMap";
+import { UTILS } from "./utils";
 
 export type PersonConfig = GameObjectConfig & {
   isPlayerControlled?: boolean;

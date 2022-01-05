@@ -1,4 +1,5 @@
 import Person from "./Person";
+import { UTILS, ANIMATIONS } from "./utils";
 
 export const OverworldMapsConfig = {
   DemoRoom: {

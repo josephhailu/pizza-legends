@@ -1,13 +1,10 @@
+import { CUSTOM_EVENTS } from "./CustomEvent";
 import { Behaviour } from "./GameObject";
 import OverworldMap from "./OverworldMap";
 import { OverworldMapsConfig } from "./OverworldMapsConfig";
 import Person from "./Person";
 import TextMessage from "./TextMessage";
-
-export enum CUSTOM_EVENTS {
-  PersonWalkComplete = "PersonWalkComplete",
-  PersonStandComplete = "PersonStandComplete",
-}
+import { UTILS } from "./utils";
 
 export type OverworldEventConfig = {
   map: OverworldMap;

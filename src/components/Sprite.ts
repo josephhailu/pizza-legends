@@ -1,4 +1,5 @@
 import GameObject from "./GameObject";
+import { ANIMATIONS, UTILS, DIMENSIONS } from "./utils";
 
 export type SpriteConfig = {
   animation?: {
