@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./styles/global.css";
 import "./styles/edit.css";
 
@@ -12,8 +12,24 @@ function App() {
     cellSize: { width: 16, height: 16 },
     opacity: 0.5,
     walls: {},
+    mapImage: new Image(),
     mapImageSrc: "",
   });
+
+  React.useEffect(() => {
+    appState.mapImage.onload = () => {
+      console.log("loaded new image");
+
+      setAppState((prevState) => {
+        return {
+          ...prevState,
+          isImageLoaded: true,
+          imageProperties: `Width :  ${appState.mapImage.width}px Height: ${appState.mapImage.height}px`,
+          walls: {},
+        };
+      });
+    };
+  }, [appState.mapImageSrc]);
 
   const handleFileOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files![0];
@@ -69,18 +85,22 @@ function App() {
   ) => {
     e.preventDefault();
     if (!!appState.walls && Object.keys(appState.walls).length > 0) {
-      const blob = new Blob([JSON.stringify(appState.walls)], {
-        type: "text/json",
-      });
       const a = document.createElement("a");
+
       a.download = "walls.json";
-      a.href = window.URL.createObjectURL(blob);
-      const clickEvent = new MouseEvent("click", {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-      });
-      a.dispatchEvent(clickEvent);
+      a.href = window.URL.createObjectURL(
+        new Blob([JSON.stringify(appState.walls)], {
+          type: "text/json",
+        })
+      );
+
+      a.dispatchEvent(
+        new MouseEvent("click", {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+        })
+      );
       a.remove();
     }
   };
@@ -108,7 +128,7 @@ function App() {
         <div className="info">
           <p id="message">{appState.mouseEventDetails}</p>
         </div>
-        <Canvases />
+        <Canvases mapImage={appState.mapImage} />
       </div>
     </div>
   );
@@ -242,12 +262,32 @@ const ExportJSON = ({
   );
 };
 
-const Canvases = (): JSX.Element => {
+const Canvases = ({
+  mapImage,
+}: {
+  mapImage: HTMLImageElement;
+}): JSX.Element => {
+  const mapCanvas = React.useRef<HTMLCanvasElement>(null);
+  const cellCanvas = React.useRef<HTMLCanvasElement>(null);
+  const collisionCanvas = React.useRef<HTMLCanvasElement>(null);
+
+  React.useEffect(() => {
+    //when we get a new image rerender canvases
+    drawMap();
+  }, [mapImage]);
+
+  const drawMap = () => {
+    const mapCtx = mapCanvas.current!.getContext("2d")!;
+
+    mapCtx.clearRect(0, 0, mapCanvas.current!.width, mapCanvas.current!.height);
+    mapCtx.drawImage(mapImage, 0, 0);
+  };
+
   return (
     <div className="canvases">
-      <canvas className="tilemap-canvas"></canvas>
-      <canvas className="cell-grid-canvas"></canvas>
-      <canvas className="collision-canvas"></canvas>
+      <canvas className="tilemap-canvas" ref={mapCanvas}></canvas>
+      <canvas className="cell-grid-canvas" ref={cellCanvas}></canvas>
+      <canvas className="collision-canvas" ref={collisionCanvas}></canvas>
     </div>
   );
 };
