@@ -133,6 +133,7 @@ function MapEditor() {
       if (appState.walls[clickedWallKey] === true) {
         return;
       }
+
       addCollisionWall(clickedWallKey);
     } else {
       //only remove a wall that exists
@@ -140,16 +141,25 @@ function MapEditor() {
         removeCollisionWall(clickedWallKey);
       }
     }
+    console.log(appState.walls);
   }
 
   function addCollisionWall(newWallKey: string) {
     setAppState((prevState) => {
+      //add key to walls object for the cell that was clicked
+      const accumulator: Record<string, boolean> = {};
+      const newWalls = Object.keys(prevState.walls).reduce((obj, key) => {
+        return {
+          ...obj,
+          [key]: true,
+        };
+      }, accumulator);
+
+      newWalls[newWallKey] = true;
+
       return {
         ...prevState,
-        walls: {
-          ...prevState.walls,
-          [newWallKey]: true,
-        },
+        walls: newWalls,
       };
     });
   }
@@ -162,7 +172,7 @@ function MapEditor() {
         .reduce((obj, key) => {
           return {
             ...obj,
-            [key]: prevState.walls,
+            [key]: true,
           };
         }, {});
 
@@ -197,7 +207,11 @@ function MapEditor() {
             isAddingTiles={appState.isAddingTiles}
             onRadioClick={handleRadioClick}
           />
-          <ExportJSON onExportClick={handleExportClick} />
+          <div className="export">
+            <button onClick={handleExportClick} id="exportJSON">
+              Export
+            </button>
+          </div>
         </div>
         <div className="info">
           <p id="message">{mouseEventDetails}</p>
@@ -330,20 +344,6 @@ export const CollisionRadioOptions = ({
       />
       <label htmlFor="remove">Remove Wall</label>
     </>
-  );
-};
-
-const ExportJSON = ({
-  onExportClick,
-}: {
-  onExportClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}): JSX.Element => {
-  return (
-    <div className="export">
-      <button onClick={onExportClick} id="exportJSON">
-        Export
-      </button>
-    </div>
   );
 };
 
