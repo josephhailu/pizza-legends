@@ -2,7 +2,7 @@ import React from "react";
 import "../../styles/global.css";
 import "../../styles/edit.css";
 
-import { UTILS } from "../utils";
+import {UTILS} from "../utils";
 import Canvases from "./Canvases";
 
 export type MapEditorState = {
@@ -26,7 +26,7 @@ function MapEditor() {
     imageProperties: "",
     isAddingTiles: true,
     isImageLoaded: false,
-    cellSize: { width: 16, height: 16 },
+    cellSize: {width: 16, height: 16},
     opacity: 0.5,
     walls: {},
   });
@@ -127,58 +127,24 @@ function MapEditor() {
   function updateCollisionObject(canvasCoords: number[]) {
     const [cellX, cellY] = getCellCoords(canvasCoords);
     const clickedWallKey = UTILS.asGridCoord(cellX, cellY);
-
+    const newWalls = {...appState.walls};
     if (appState.isAddingTiles) {
       //don't add a wall we already have
       if (appState.walls[clickedWallKey] === true) {
         return;
       }
-
-      addCollisionWall(clickedWallKey);
+      newWalls[clickedWallKey] = true;
     } else {
       //only remove a wall that exists
-      if (Object.keys(appState.walls).find((key) => key === clickedWallKey)) {
-        removeCollisionWall(clickedWallKey);
+      if (!appState.walls.hasOwnProperty(clickedWallKey)) {
+        return;
       }
+      delete newWalls[clickedWallKey];
     }
-    console.log(appState.walls);
-  }
-
-  function addCollisionWall(newWallKey: string) {
     setAppState((prevState) => {
-      //add key to walls object for the cell that was clicked
-      const accumulator: Record<string, boolean> = {};
-      const newWalls = Object.keys(prevState.walls).reduce((obj, key) => {
-        return {
-          ...obj,
-          [key]: true,
-        };
-      }, accumulator);
-
-      newWalls[newWallKey] = true;
-
       return {
         ...prevState,
         walls: newWalls,
-      };
-    });
-  }
-
-  function removeCollisionWall(newWallKey: string) {
-    setAppState((prevState) => {
-      //remove key from walls object for the cell that was clicked
-      const filtered = Object.keys(prevState.walls)
-        .filter((key) => key !== newWallKey)
-        .reduce((obj, key) => {
-          return {
-            ...obj,
-            [key]: true,
-          };
-        }, {});
-
-      return {
-        ...prevState,
-        walls: filtered,
       };
     });
   }
@@ -236,18 +202,21 @@ export const FileUpload = ({
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }): JSX.Element => {
   return (
-    <div className="status">
-      <fieldset>
-        <h3>Image Properties:</h3>
-        <input
-          type="file"
-          name="upload"
-          id="upload"
-          accept="image/*"
-          onChange={onFileChange}
-        />
+    <div>
+      <h3>Image Properties:</h3>
+      <div className="control">
+        <div>
+          <label htmlFor="upload">Upload Image</label>
+          <input
+            type="file"
+            name="upload"
+            id="upload"
+            accept="image/*"
+            onChange={onFileChange}
+          />
+        </div>
         <p id="image-properties">{imageProperties}</p>
-      </fieldset>
+      </div>
     </div>
   );
 };
@@ -272,46 +241,52 @@ export const CellGridOptions = ({
   onOpacityChange,
 }: CellGridType): JSX.Element => {
   return (
-    <fieldset>
+    <div>
       <h3>Cell Grid Size (pixels):</h3>
-      <label htmlFor="width">Width</label>
-      <input
-        type="number"
-        name="width"
-        id="width"
-        max="100"
-        min="1"
-        value={cellSize.width}
-        onChange={(e) => {
-          onCellSizeChange(e, "width");
-        }}
-      />
-
-      <label htmlFor="height">Height</label>
-      <input
-        type="number"
-        name="height"
-        id="height"
-        max="100"
-        min="1"
-        value={cellSize.height}
-        onChange={(e) => {
-          onCellSizeChange(e, "height");
-        }}
-      />
-
-      <label htmlFor="opacity">Opacity</label>
-      <input
-        type="range"
-        name="opacity"
-        id="opacity"
-        max="1"
-        min="0"
-        value={opacity}
-        step="0.01"
-        onChange={onOpacityChange}
-      />
-    </fieldset>
+      <div className="control">
+        <div>
+          <label htmlFor="width">Width</label>
+          <input
+            type="number"
+            name="width"
+            id="width"
+            max="100"
+            min="1"
+            value={cellSize.width}
+            onChange={(e) => {
+              onCellSizeChange(e, "width");
+            }}
+          />
+        </div>
+        <div>
+          <label htmlFor="height">Height</label>
+          <input
+            type="number"
+            name="height"
+            id="height"
+            max="100"
+            min="1"
+            value={cellSize.height}
+            onChange={(e) => {
+              onCellSizeChange(e, "height");
+            }}
+          />
+        </div>
+        <div>
+          <label htmlFor="opacity">Opacity</label>
+          <input
+            type="range"
+            name="opacity"
+            id="opacity"
+            max="1"
+            min="0"
+            value={opacity}
+            step="0.01"
+            onChange={onOpacityChange}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -323,27 +298,30 @@ export const CollisionRadioOptions = ({
   onRadioClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }): JSX.Element => {
   return (
-    <>
-      <input
-        type="radio"
-        id="add"
-        name="wall"
-        value="Add"
-        checked={isAddingTiles}
-        onChange={onRadioClick}
-      />
-      <label htmlFor="add">Add Wall</label>
-
-      <input
-        type="radio"
-        id="remove"
-        name="wall"
-        value="Remove"
-        checked={!isAddingTiles}
-        onChange={onRadioClick}
-      />
-      <label htmlFor="remove">Remove Wall</label>
-    </>
+    <div className="control">
+      <div>
+        <label htmlFor="add">Add Wall</label>
+        <input
+          type="radio"
+          id="add"
+          name="wall"
+          value="Add"
+          checked={isAddingTiles}
+          onChange={onRadioClick}
+        />
+      </div>
+      <div>
+        <label htmlFor="remove">Remove Wall</label>
+        <input
+          type="radio"
+          id="remove"
+          name="wall"
+          value="Remove"
+          checked={!isAddingTiles}
+          onChange={onRadioClick}
+        />
+      </div>
+    </div>
   );
 };
 

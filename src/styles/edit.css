@@ -1,5 +1,5 @@
 body {
-  background-color: gray;
+  background-color: rgb(240, 217, 187);
 }
 
 .container {
@@ -10,8 +10,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  background-color: rgb(240, 217, 187);
 }
 
 .controls {
@@ -23,15 +21,37 @@ body {
   background-color: antiquewhite;
 }
 
-.controls fieldset {
+.controls > div {
+  width: 100%;
+
   padding: 1rem;
   margin-bottom: 1rem;
+
+  outline: 1px solid black;
 }
 
-.status {
+.control {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.control > div {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.control > div > label {
+  margin-right: 10px;
+}
+
+.control > div > input[type="range"] {
+  padding: 5px;
+}
+
+.export > button {
+  padding: 5px;
+  cursor: pointer;
 }
 
 .info {
@@ -51,9 +71,3 @@ body {
   transform: scale(3) translateY(50%);
   outline: 1px solid white;
 }
-
-/* .tilemap-canvas {
-}
-
-.collision-canvas {
-} */
