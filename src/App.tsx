@@ -2,11 +2,7 @@ import React from "react";
 import MapEditor from "./components/MapEditor/MapEditor";
 
 function App() {
-  return (
-    <div className="App">
-      <MapEditor />
-    </div>
-  );
+  return <MapEditor />;
 }
 
 export default App;

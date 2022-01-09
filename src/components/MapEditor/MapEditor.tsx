@@ -18,6 +18,7 @@ export type MapEditorState = {
   walls: {
     [x: string]: boolean;
   };
+  elementHeight: number;
 };
 
 function MapEditor() {
@@ -29,6 +30,7 @@ function MapEditor() {
     cellSize: {width: 16, height: 16},
     opacity: 0.5,
     walls: {},
+    elementHeight: 0,
   });
 
   const [mapImage] = React.useState(new Image());
@@ -42,6 +44,7 @@ function MapEditor() {
         isImageLoaded: true,
         imageProperties: `Width :  ${mapImage.width}px Height: ${mapImage.height}px`,
         walls: {},
+        elementHeight: mapImage.height * prevState.cssScaleFactor + 50,
       };
     });
   };
@@ -188,6 +191,7 @@ function MapEditor() {
           opacity={appState.opacity}
           walls={appState.walls}
           handleCollisionCanvasMouseDown={handleCollisionCanvasMouseDown}
+          elementHeight={appState.elementHeight}
         />
       </div>
     </div>

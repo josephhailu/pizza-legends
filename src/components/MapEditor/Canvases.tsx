@@ -13,6 +13,7 @@ export interface CanvasesType {
   walls: {
     [x: string]: boolean;
   };
+  elementHeight: number;
   handleCollisionCanvasMouseDown: (canvasCoords: number[]) => void;
 }
 
@@ -21,6 +22,7 @@ const Canvases = ({
   cellSize,
   opacity,
   walls,
+  elementHeight,
   handleCollisionCanvasMouseDown,
 }: CanvasesType): JSX.Element => {
   const mapCanvas = React.useRef<HTMLCanvasElement>(null);
@@ -95,7 +97,7 @@ const Canvases = ({
   }
 
   return (
-    <div className="canvases">
+    <div className="canvases" style={{height: elementHeight}}>
       <canvas className="tilemap-canvas" ref={mapCanvas}></canvas>
       <canvas
         className="cell-grid-canvas"
