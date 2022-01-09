@@ -61,7 +61,6 @@ body {
 
 .canvases {
   position: relative;
-  width: 100vw;
 }
 
 .canvases canvas {

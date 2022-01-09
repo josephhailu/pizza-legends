@@ -18,7 +18,10 @@ export type MapEditorState = {
   walls: {
     [x: string]: boolean;
   };
-  elementHeight: number;
+  elementSize: {
+    width: number;
+    height: number;
+  };
 };
 
 function MapEditor() {
@@ -30,13 +33,17 @@ function MapEditor() {
     cellSize: {width: 16, height: 16},
     opacity: 0.5,
     walls: {},
-    elementHeight: 0,
+    elementSize: {width: 0, height: 0},
   });
 
   const [mapImage] = React.useState(new Image());
   const [mouseEventDetails, setMouseEventDetails] = React.useState("");
 
   mapImage.onload = () => {
+    let newSize = {
+      height: mapImage.height * appState.cssScaleFactor + 50,
+      width: mapImage.width * appState.cssScaleFactor + 50,
+    };
     setAppState((prevState) => {
       return {
         ...prevState,
@@ -44,7 +51,7 @@ function MapEditor() {
         isImageLoaded: true,
         imageProperties: `Width :  ${mapImage.width}px Height: ${mapImage.height}px`,
         walls: {},
-        elementHeight: mapImage.height * prevState.cssScaleFactor + 50,
+        elementSize: newSize,
       };
     });
   };
@@ -191,7 +198,7 @@ function MapEditor() {
           opacity={appState.opacity}
           walls={appState.walls}
           handleCollisionCanvasMouseDown={handleCollisionCanvasMouseDown}
-          elementHeight={appState.elementHeight}
+          elementSize={appState.elementSize}
         />
       </div>
     </div>
