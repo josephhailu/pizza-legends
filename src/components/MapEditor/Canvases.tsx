@@ -1,4 +1,7 @@
+import {type} from "os";
 import React from "react";
+
+type CanvasDispatchTypes = "drawAll" | "drawGrid" | "drawMap" | "drawWalls";
 
 export interface CanvasesType {
   mapImage: HTMLImageElement;
@@ -24,6 +27,22 @@ const Canvases = ({
   const gridCanvas = React.useRef<HTMLCanvasElement>(null);
   const collisionCanvas = React.useRef<HTMLCanvasElement>(null);
 
+  function canvasDispatcher(action: {type: CanvasDispatchTypes}) {
+    if (action.type === "drawAll") {
+      drawMap();
+      drawGrid();
+      drawWalls();
+    } else if (action.type === "drawMap") {
+      drawMap();
+    } else if (action.type === "drawGrid") {
+      drawGrid();
+    } else if (action.type === "drawWalls") {
+      drawWalls();
+    } else {
+      throw new Error();
+    }
+  }
+
   React.useEffect(() => {
     //set canvas dimensions
     [mapCanvas, gridCanvas, collisionCanvas].forEach((c) => {
@@ -32,13 +51,17 @@ const Canvases = ({
     });
   }, [mapImage.src, mapImage.width, mapImage.height]);
 
-  const memoDraw = React.useCallback(() => {
-    //draw map
+  React.useEffect(() => {
+    canvasDispatcher({type: "drawAll"});
+  });
+
+  function drawMap() {
     const mapCtx = mapCanvas.current!.getContext("2d")!;
     mapCtx.clearRect(0, 0, mapCanvas.current!.width, mapCanvas.current!.height);
     mapCtx.drawImage(mapImage, 0, 0);
+  }
 
-    //draw grid
+  function drawGrid() {
     const cellGridCtx = gridCanvas.current!.getContext("2d")!;
     const width = mapCanvas.current!.width;
     const height = mapCanvas.current!.height;
@@ -53,8 +76,9 @@ const Canvases = ({
     for (let index = 1; index <= height / cellSize.height; index++) {
       cellGridCtx.fillRect(0, index * cellSize.height, width, 1);
     }
+  }
 
-    //draw collision object
+  function drawWalls() {
     const collisionCtx = collisionCanvas.current!.getContext("2d")!;
     collisionCtx.clearRect(
       0,
@@ -68,11 +92,7 @@ const Canvases = ({
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
       collisionCtx.fillRect(x, y, cellSize.width, cellSize.height);
     });
-  }, [cellSize.height, cellSize.width, mapImage, walls]);
-
-  React.useEffect(() => {
-    memoDraw();
-  }, [mapImage.src, opacity, walls, cellSize, memoDraw]);
+  }
 
   return (
     <div className="canvases">
@@ -80,7 +100,7 @@ const Canvases = ({
       <canvas
         className="cell-grid-canvas"
         ref={gridCanvas}
-        style={{ opacity: opacity }}
+        style={{opacity: opacity}}
       ></canvas>
       <canvas
         className="collision-canvas"
