@@ -1,6 +1,6 @@
 import React from "react";
 import {Outlet, Link} from "react-router-dom";
-import PizzaLegends from "./routes";
+import "./styles/global.css";
 
 export default function App() {
   return (
@@ -15,7 +15,6 @@ export default function App() {
         <Link to="/game">Pizza Legends</Link> |{" "}
         <Link to="/edit">Map Collision Editor</Link>
       </nav>
-
       <Outlet />
     </div>
   );

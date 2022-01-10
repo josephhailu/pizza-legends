@@ -1,4 +1,3 @@
-import {type} from "os";
 import React from "react";
 
 type CanvasDispatchTypes = "drawAll" | "drawGrid" | "drawMap" | "drawWalls";

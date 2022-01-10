@@ -1,9 +1,9 @@
-export default function PizzaLegends() {
+import PizzaLegends from "../components/PizzaLegends/PizzaLegends";
+
+export default function Index() {
   return (
     <main>
-      <div className="game-container">
-        <canvas className="game-canvas" />
-      </div>
+      <PizzaLegends />
     </main>
   );
 }

@@ -1,19 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import App from "./App";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 import reportWebVitals from "./reportWebVitals";
 import Edit from "./routes/edit";
-import PizzaLegends from "./routes";
+import Index from "./routes";
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="game" element={<PizzaLegends />} />
+          <Route path="game" element={<Index />} />
 
           <Route path="edit" element={<Edit />} />
           <Route
