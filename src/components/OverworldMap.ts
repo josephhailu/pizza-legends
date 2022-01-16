@@ -9,24 +9,6 @@ export type Walls = {
 };
 
 export type CutsceneSpaces = Record<string, Record<"events", Behaviour[]>[]>;
-const c = {
-  "16,32": [
-    {
-      events: [
-        { type: "textMessage", text: "Hey!", faceHero: "me" },
-        { who: "me", type: "walk", direction: "left" },
-      ],
-    },
-  ],
-  "32,0": [
-    {
-      events: [
-        { type: "changeMap", map: "Kitchen" },
-        { who: "me", type: "walk", direction: "left" },
-      ],
-    },
-  ],
-};
 
 export type OverworldMapConfig = {
   gameObjects: Record<string, GameObject>;
@@ -52,7 +34,6 @@ export default class OverworldMap {
 
     this.upperImage = new Image();
     this.upperImage.src = config.upperSrc;
-
     this.isCutScenePlaying = false;
   }
 

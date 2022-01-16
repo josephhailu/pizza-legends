@@ -8,11 +8,13 @@ import { OverworldMapsConfig } from "./OverworldMapsConfig";
 import Person from "./Person";
 
 export type OverworldConfig = {
-  element: HTMLElement;
+  gameContainer: HTMLDivElement;
+  canvas: HTMLCanvasElement;
+  ctx2d: CanvasRenderingContext2D;
 };
 
 export default class Overworld {
-  element: HTMLElement;
+  gameContainer: HTMLDivElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   map?: OverworldMap = undefined;
@@ -21,8 +23,8 @@ export default class Overworld {
 
   engine: FixedStepEngine;
   constructor(config: OverworldConfig) {
-    this.element = config.element;
-    this.canvas = this.element.querySelector(".game-canvas")!;
+    this.gameContainer = config.gameContainer;
+    this.canvas = config.canvas;
     this.ctx = this.canvas.getContext("2d")!;
 
     this.engine = new FixedStepEngine(
@@ -97,17 +99,5 @@ export default class Overworld {
     this.bindHeroPosiitonCheck();
 
     this.engine.start();
-
-    // this.map.startCutScene([
-    //   {who: "hero", type: "walk", direction: "down"},
-    //   {who: "houseGuy", type: "walk", direction: "up"},
-    //   {who: "hero", type: "walk", direction: "down"},
-    //   {who: "npc1", type: "walk", direction: "up", time: 300},
-    //   {who: "me", type: "walk", direction: "down"},
-    //   {who: "me", type: "walk", direction: "down"},
-    //   {who: "me", type: "walk", direction: "down"},
-    //   {who: "me", type: "walk", direction: "right"},
-    //   {type: "textMessage", text: "Hi!"},
-    // ]);
   }
 }

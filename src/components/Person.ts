@@ -87,7 +87,7 @@ export default class Person extends GameObject {
       this.movingProgressRemaining -= 1;
     }
 
-    if (this.movingProgressRemaining == 0) {
+    if (this.movingProgressRemaining === 0) {
       // emit done moving signal
       UTILS.emitEvent(CUSTOM_EVENTS.PersonWalkComplete, { whoId: this.id });
     }
