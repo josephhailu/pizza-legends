@@ -1,39 +1,26 @@
-import {useEffect, useCallback, useState} from "react";
+import {useEffect, useRef} from "react";
 import {DIMENSIONS} from "../utils";
 import "../../styles/index.css";
+import "../../styles/TextMessage.css";
+
 import Overworld from "../Overworld";
 
 export default function PizzaLegends() {
-  const [gameCanvas, setGameCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [gameContainer, setGameContainer] = useState<HTMLDivElement | null>(
-    null
-  );
-
-  const gameContainerRef = useCallback((div: HTMLDivElement) => {
-    if (div !== null) {
-      setGameContainer(div);
-    }
-  }, []);
-
-  const gameCanvasRef = useCallback((canvas: HTMLCanvasElement) => {
-    if (canvas !== null) {
-      setGameCanvas(canvas);
-      canvas.width = DIMENSIONS.canvasDimensions.width;
-      canvas.height = DIMENSIONS.canvasDimensions.height;
-    }
-  }, []);
-
+  const gameContainerRef = useRef<HTMLDivElement | null>(null);
+  const gameCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  
+  // Init
   useEffect(() => {
-    // onload
-    if (gameCanvas !== null && gameContainer !== null) {
+    if (gameContainerRef.current && gameCanvasRef.current) {
+      gameCanvasRef.current.width = DIMENSIONS.canvasDimensions.width;
+      gameCanvasRef.current.height = DIMENSIONS.canvasDimensions.height;
       const ov = new Overworld({
-        element: gameContainer,
+        gameContainer: gameContainerRef.current,
+        canvas: gameCanvasRef.current,
       });
-
       ov.init();
     }
-  }, [gameCanvas, gameContainer]);
-
+  }, []);
   return (
     <main>
       <div className="game-container" ref={gameContainerRef}>

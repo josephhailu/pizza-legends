@@ -1,6 +1,7 @@
 import GameObject, { Behaviour } from "./GameObject";
 import Overworld from "./Overworld";
 import OverworldEvent from "./OverworldEvent";
+import { OverworldMapConfig } from "./OverworldMapsConfig";
 import Person, { Directions } from "./Person";
 import { UTILS } from "./utils";
 
@@ -10,13 +11,7 @@ export type Walls = {
 
 export type CutsceneSpaces = Record<string, Record<"events", Behaviour[]>[]>;
 
-export type OverworldMapConfig = {
-  gameObjects: Record<string, GameObject>;
-  lowerSrc: string;
-  upperSrc: string;
-  walls?: Walls;
-  cutsceneSpaces?: CutsceneSpaces;
-};
+
 export default class OverworldMap {
   overworld?: Overworld;
   gameObjects: Record<string, GameObject>;

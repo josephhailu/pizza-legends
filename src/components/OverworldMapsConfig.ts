@@ -1,7 +1,15 @@
-import { OverworldMapConfig } from "./OverworldMap";
+import GameObject from "./GameObject";
+import {CutsceneSpaces, Walls} from "./OverworldMap";
 import Person from "./Person";
-import { UTILS, ANIMATIONS } from "./utils";
+import {UTILS, ANIMATIONS} from "./utils";
 
+export type OverworldMapConfig = {
+  gameObjects: Record<string, GameObject>;
+  lowerSrc: string;
+  upperSrc: string;
+  walls?: Walls;
+  cutsceneSpaces?: CutsceneSpaces;
+};
 export const OverworldMapsConfig: Record<string, OverworldMapConfig> = {
   DemoRoom: {
     lowerSrc: "./images/maps/DemoLower.png",
@@ -17,23 +25,23 @@ export const OverworldMapsConfig: Record<string, OverworldMapConfig> = {
         y: UTILS.withGrid(9),
         src: "./images/characters/people/npc1.png",
         behaviourLoop: [
-          { type: "stand", direction: "down", time: 800 },
-          { type: "stand", direction: "up", time: 800 },
-          { type: "stand", direction: "right", time: 1200 },
-          { type: "stand", direction: "up", time: 300 },
+          {type: "stand", direction: "down", time: 800},
+          {type: "stand", direction: "up", time: 800},
+          {type: "stand", direction: "right", time: 1200},
+          {type: "stand", direction: "up", time: 300},
         ],
         talking: [
           {
             events: [
-              { type: "textMessage", text: "Hiaaaaa!", faceHero: "npc1" },
-              { type: "textMessage", text: "OMG!" },
-              { who: "npc1", type: "stand", direction: "down", time: 120 },
-              { who: "npc1", type: "stand", direction: "up", time: 120 },
-              { who: "npc1", type: "stand", direction: "right", time: 120 },
-              { who: "npc1", type: "stand", direction: "left", time: 120 },
-              { type: "textMessage", text: "Leaavee!" },
-              { who: "hero", type: "walk", direction: "left" },
-              { who: "hero", type: "stand", direction: "right" },
+              {type: "textMessage", text: "Hiaaaaa!", faceHero: "npc1"},
+              {type: "textMessage", text: "OMG!"},
+              {who: "npc1", type: "stand", direction: "down", time: 120},
+              {who: "npc1", type: "stand", direction: "up", time: 120},
+              {who: "npc1", type: "stand", direction: "right", time: 120},
+              {who: "npc1", type: "stand", direction: "left", time: 120},
+              {type: "textMessage", text: "Leaavee!"},
+              {who: "hero", type: "walk", direction: "left"},
+              {who: "hero", type: "stand", direction: "right"},
             ],
           },
         ],
@@ -57,10 +65,10 @@ export const OverworldMapsConfig: Record<string, OverworldMapConfig> = {
         src: "./images/characters/people/me2.png",
         animation: ANIMATIONS.singleFrame,
         behaviourLoop: [
-          { type: "walk", direction: "left" },
-          { type: "walk", direction: "up" },
-          { type: "walk", direction: "right" },
-          { type: "walk", direction: "down" },
+          {type: "walk", direction: "left"},
+          {type: "walk", direction: "up"},
+          {type: "walk", direction: "right"},
+          {type: "walk", direction: "down"},
         ],
         talking: [
           {
@@ -70,10 +78,10 @@ export const OverworldMapsConfig: Record<string, OverworldMapConfig> = {
                 text: "I have big feet.",
                 faceHero: "gingerbread",
               },
-              { who: "hero", type: "stand", direction: "right", time: 100 },
-              { who: "hero", type: "stand", direction: "left", time: 300 },
+              {who: "hero", type: "stand", direction: "right", time: 100},
+              {who: "hero", type: "stand", direction: "left", time: 300},
 
-              { who: "me", type: "stand", direction: "down", time: 2200 },
+              {who: "me", type: "stand", direction: "down", time: 2200},
               {
                 type: "textMessage",
                 text: "...What?",
@@ -137,19 +145,19 @@ export const OverworldMapsConfig: Record<string, OverworldMapConfig> = {
       [UTILS.asGridCoord(7, 4)]: [
         {
           events: [
-            { type: "textMessage", text: "Hey!", faceHero: "me" },
-            { who: "me", type: "walk", direction: "left" },
-            { who: "me", type: "stand", direction: "up", time: 120 },
-            { type: "textMessage", text: "You can't be in there!" },
-            { who: "me", type: "walk", direction: "right" },
-            { who: "hero", type: "walk", direction: "down" },
-            { who: "hero", type: "walk", direction: "left" },
+            {type: "textMessage", text: "Hey!", faceHero: "me"},
+            {who: "me", type: "walk", direction: "left"},
+            {who: "me", type: "stand", direction: "up", time: 120},
+            {type: "textMessage", text: "You can't be in there!"},
+            {who: "me", type: "walk", direction: "right"},
+            {who: "hero", type: "walk", direction: "down"},
+            {who: "hero", type: "walk", direction: "left"},
           ],
         },
       ],
       [UTILS.asGridCoord(5, 10)]: [
         {
-          events: [{ type: "changeMap", map: "Kitchen" }],
+          events: [{type: "changeMap", map: "Kitchen"}],
         },
       ],
     },

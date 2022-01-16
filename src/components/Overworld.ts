@@ -1,16 +1,15 @@
-import { CUSTOM_EVENTS } from "./CustomEvent";
+import {CUSTOM_EVENTS} from "./CustomEvent";
 import DirectionInput from "./DirectionInput";
 import FixedStepEngine from "./FixedStepEngine";
 import GameObject from "./GameObject";
 import KeyPressListener from "./KeyPressListener";
-import OverworldMap, { OverworldMapConfig } from "./OverworldMap";
-import { OverworldMapsConfig } from "./OverworldMapsConfig";
+import OverworldMap from "./OverworldMap";
+import {OverworldMapsConfig, OverworldMapConfig} from "./OverworldMapsConfig";
 import Person from "./Person";
 
 export type OverworldConfig = {
   gameContainer: HTMLDivElement;
   canvas: HTMLCanvasElement;
-  ctx2d: CanvasRenderingContext2D;
 };
 
 export default class Overworld {
