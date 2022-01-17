@@ -1,4 +1,5 @@
 import React from "react";
+import {StyledCanvas, StyledCanvases} from "./styles";
 
 type CanvasDispatchTypes = "drawAll" | "drawGrid" | "drawMap" | "drawWalls";
 
@@ -99,17 +100,16 @@ const Canvases = ({
   }
 
   return (
-    <div
-      className="canvases"
+    <StyledCanvases
       style={{height: elementSize.height, width: elementSize.width}}
     >
-      <canvas className="tilemap-canvas" ref={mapCanvas}></canvas>
-      <canvas
+      <StyledCanvas className="tilemap-canvas" ref={mapCanvas} />
+      <StyledCanvas
         className="cell-grid-canvas"
         ref={gridCanvas}
         style={{opacity: opacity}}
-      ></canvas>
-      <canvas
+      />
+      <StyledCanvas
         className="collision-canvas"
         ref={collisionCanvas}
         onMouseDown={(e) => {
@@ -117,8 +117,8 @@ const Canvases = ({
           const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
           handleCollisionCanvasMouseDown(canvasCoords);
         }}
-      ></canvas>
-    </div>
+      />
+    </StyledCanvases>
   );
 };
 

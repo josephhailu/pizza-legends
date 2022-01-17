@@ -1,8 +1,12 @@
 import React from "react";
-import "../../styles/edit.css";
-
-import {UTILS} from "../utils";
 import Canvases from "./Canvases";
+import {
+  StyledContainer,
+  StyledControl,
+  StyledControls,
+  StyledExport,
+  StyledInfo,
+} from "./styles";
 
 export type MapEditorState = {
   cssScaleFactor: number;
@@ -77,6 +81,7 @@ function MapEditor() {
           [dimension]: parseInt(e.target.value),
         },
         walls: {},
+        isAddingTiles: true,
       };
     });
   };
@@ -135,7 +140,9 @@ function MapEditor() {
 
   function updateCollisionObject(canvasCoords: number[]) {
     const [cellX, cellY] = getCellCoords(canvasCoords);
-    const clickedWallKey = UTILS.asGridCoord(cellX, cellY);
+    const clickedWallKey = `${cellX * appState.cellSize.width},${
+      cellY * appState.cellSize.height
+    }`;
     const newWalls = {...appState.walls};
     if (appState.isAddingTiles) {
       //don't add a wall we already have
@@ -166,8 +173,8 @@ function MapEditor() {
   }
   return (
     <div className="App">
-      <div className="container">
-        <div className="controls">
+      <StyledContainer>
+        <StyledControls>
           <FileUpload
             imageProperties={appState.imageProperties}
             onFileChange={handleFileOnChange}
@@ -182,15 +189,15 @@ function MapEditor() {
             isAddingTiles={appState.isAddingTiles}
             onRadioClick={handleRadioClick}
           />
-          <div className="export">
+          <StyledExport>
             <button onClick={handleExportClick} id="exportJSON">
               Export
             </button>
-          </div>
-        </div>
-        <div className="info">
+          </StyledExport>
+        </StyledControls>
+        <StyledInfo>
           <p id="message">{mouseEventDetails}</p>
-        </div>
+        </StyledInfo>
         <Canvases
           mapImage={mapImage}
           cellSize={appState.cellSize}
@@ -199,7 +206,7 @@ function MapEditor() {
           handleCollisionCanvasMouseDown={handleCollisionCanvasMouseDown}
           elementSize={appState.elementSize}
         />
-      </div>
+      </StyledContainer>
     </div>
   );
 }
@@ -214,7 +221,7 @@ export const FileUpload = ({
   return (
     <div>
       <h3>Image Properties:</h3>
-      <div className="control">
+      <StyledControl>
         <div>
           <label htmlFor="upload">Upload Image</label>
           <input
@@ -226,7 +233,7 @@ export const FileUpload = ({
           />
         </div>
         <p id="image-properties">{imageProperties}</p>
-      </div>
+      </StyledControl>
     </div>
   );
 };
@@ -253,7 +260,7 @@ export const CellGridOptions = ({
   return (
     <div>
       <h3>Cell Grid Size (pixels):</h3>
-      <div className="control">
+      <StyledControl>
         <div>
           <label htmlFor="width">Width</label>
           <input
@@ -295,7 +302,7 @@ export const CellGridOptions = ({
             onChange={onOpacityChange}
           />
         </div>
-      </div>
+      </StyledControl>
     </div>
   );
 };
@@ -308,7 +315,7 @@ export const CollisionRadioOptions = ({
   onRadioClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }): JSX.Element => {
   return (
-    <div className="control">
+    <StyledControl>
       <div>
         <label htmlFor="add">Add Wall</label>
         <input
@@ -331,7 +338,7 @@ export const CollisionRadioOptions = ({
           onChange={onRadioClick}
         />
       </div>
-    </div>
+    </StyledControl>
   );
 };
 
