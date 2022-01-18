@@ -13,11 +13,13 @@ class TileMapEditor {
 
   selectedFile?: File;
   fileElement: HTMLInputElement;
+  imageOpacityElement: HTMLInputElement;
 
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
-  opacityElement: HTMLInputElement;
+  gridOpacityElement: HTMLInputElement;
   messageElement: HTMLParagraphElement;
+  canvasDiv: HTMLDivElement;
 
   image: HTMLImageElement;
   imagePropertiesElement: HTMLParagraphElement;
@@ -39,12 +41,16 @@ class TileMapEditor {
     };
 
     this.fileElement = document.querySelector("#upload") as HTMLInputElement;
+    this.imageOpacityElement = document.querySelector(
+      "#imageOpacity"
+    ) as HTMLInputElement;
+
     this.imagePropertiesElement = document.querySelector(
       "#image-properties"
     ) as HTMLParagraphElement;
     this.widthElement = document.querySelector("#width") as HTMLInputElement;
     this.heightElement = document.querySelector("#height") as HTMLInputElement;
-    this.opacityElement = document.querySelector(
+    this.gridOpacityElement = document.querySelector(
       "#opacity"
     ) as HTMLInputElement;
 
@@ -52,6 +58,7 @@ class TileMapEditor {
       "#message"
     ) as HTMLInputElement;
 
+    this.canvasDiv = document.querySelector(".canvases")! as HTMLDivElement;
     this.image = new Image();
 
     this.image.onload = () => {
@@ -62,6 +69,13 @@ class TileMapEditor {
       });
 
       this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px Height: ${this.image.height}px`;
+      //set height/wdith of canvas parent div with some padding when image changes
+      this.canvasDiv.style.height = `${
+        this.image.height * this.cssScaleFactor + 40
+      }px`;
+      this.canvasDiv.style.width = `${
+        this.image.width * this.cssScaleFactor + 40
+      }px`;
       this.walls = {};
 
       this.draw();
@@ -79,11 +93,20 @@ class TileMapEditor {
     this.walls = {};
   }
 
-  init() {
+  initEventListeners() {
     //listener for file load
     this.fileElement.addEventListener(
       "change",
       (e) => this.handleFile(e),
+      false
+    );
+    //listener for image opacity
+    this.imageOpacityElement.addEventListener(
+      "change",
+      (e) =>
+        (this.canvases.mapCanvas.style.opacity = (
+          e.target! as HTMLInputElement
+        ).value),
       false
     );
 
@@ -99,8 +122,8 @@ class TileMapEditor {
       false
     );
 
-    //listener for opacity
-    this.opacityElement.addEventListener(
+    //listener for grid opacity
+    this.gridOpacityElement.addEventListener(
       "change",
       (e) =>
         (this.canvases.cellGridCanvas.style.opacity = (
@@ -185,15 +208,17 @@ class TileMapEditor {
 
   private updateCollisionObject(canvasCoords: number[]) {
     const [cellX, cellY] = this.getCellCoords(canvasCoords);
-
+    const cellKey = `${cellX * this.cellSize.width},${
+      cellY * this.cellSize.height
+    }`;
     if (this.isAddingTiles) {
-      if (this.walls[UTILS.asGridCoord(cellX, cellY)]) {
+      if (this.walls[cellKey]) {
         return;
       }
-      this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
+      this.walls[cellKey] = true;
     } else {
       //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#description
-      delete this.walls[UTILS.asGridCoord(cellX, cellY)];
+      delete this.walls[cellKey];
     }
 
     this.draw(() => this.drawCollisionLayer());
@@ -267,5 +292,5 @@ class TileMapEditor {
 
 window.onload = function () {
   const tme = new TileMapEditor({cssScaleFactor: 3});
-  tme.init();
+  tme.initEventListeners();
 };

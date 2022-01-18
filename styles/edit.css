@@ -23,9 +23,14 @@ body {
   background-color: antiquewhite;
 }
 
-.controls fieldset {
+.controls > div {
   padding: 1rem;
   margin-bottom: 1rem;
+  outline: 1px solid black;
+}
+
+.wall {
+  margin-top: 1rem;
 }
 
 .status {
@@ -36,7 +41,6 @@ body {
 
 .canvases {
   position: relative;
-  min-width: 80%;
 }
 .info {
   margin: 1rem;
@@ -45,14 +49,11 @@ body {
 }
 .canvases canvas {
   position: absolute;
-  left: 0;
-  right: 0;
-
-  margin: -50px auto;
-
+  left: 50%;
   image-rendering: pixelated;
   /*scale assets, push image down to compensate*/
-  transform: scale(3) translateY(50%);
+  transform: scale(3) translateX(-50%);
+  transform-origin: top left;
   outline: 1px solid white;
 }
 
