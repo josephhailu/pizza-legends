@@ -1,68 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./styles/global.css" type="text/css" />
-        <link rel="stylesheet" href="./styles/edit.css" type="text/css" />
-        <title>Pizza Legends</title>
-      </head>
-    
-      <body>
-        <div class="container">
-            <div class="controls">
-                <div class="status">
-                    <fieldset >
-                        <caption>Image Properties:</caption>
-                        <input type="file" name="upload" id="upload" accept="image/*" >
-                        <p id="image-properties"></p>
-                    </fieldset>
-                    
-                </div>
-                
-                <fieldset >
-                   <caption>Cell Grid Size (pixels):</caption> 
-                    <label for="width">Width</label> 
-                    <input type="number" name="width" id="width" max="100" min="1" value="16">
-                    
-                    <label for="height">Height</label>  
-                    <input type="number" name="height" id="height"max="100"min="1" value="16">
-                    
-                    <label for="opacity">Opacity</label>  
-                    <input type="range" name="opacity" id="opacity"max="1"min="0" value=".5" step="0.01">
 
-                </fieldset>
-                
-                    <input type="radio" id="add" name="wall" value="Add"
-                           checked>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/global.css" type="text/css" />
+    <link rel="stylesheet" href="./styles/edit.css" type="text/css" />
+    <title>Pizza Legends</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="controls">
+            <div class="status">
+                <div>
+                    <caption>Image Properties:</caption>
+                    <input type="file" name="upload" id="upload" accept="image/*">
+                    <label for="imageOpacity">Image Opacity</label>
+                    <input type="range" name="imageOpacity" id="imageOpacity" max="1" min="0" value="1" step="0.01">
+                    <p id="image-properties"></p>
+                </div>
+
+            </div>
+
+            <div>
+                <caption>Cell Grid Size (pixels):</caption>
+                <label for="width">Width</label>
+                <input type="number" name="width" id="width" max="100" min="1" value="16">
+
+                <label for="height">Height</label>
+                <input type="number" name="height" id="height" max="100" min="1" value="16">
+
+                <label for="opacity">Cell Grid Opacity</label>
+                <input type="range" name="opacity" id="opacity" max="1" min="0" value=".5" step="0.01">
+                <div class="wall">
+                    <input type="radio" id="add" name="wall" value="Add" checked>
                     <label for="add">Add Wall</label>
-                   
+
                     <input type="radio" id="remove" name="wall" value="Remove">
                     <label for="remove">Remove Wall</label>
-                 
-                <div class="export">
-                    <br>
-                    <a href="#" id="exportJSON" type="submit">Export</a>
-                </div>
-            </div> 
-            <div class="info">
-                <p id="message"></p>
-            </div>
-            <div class="canvases">
 
-                <canvas class="tilemap-canvas"></canvas>
-                <canvas class="cell-grid-canvas"></canvas>
-                <canvas class="collision-canvas"></canvas>
-            </div> 
-           
+                </div>
+
+            </div>
+
+
+            <div class="export">
+                <br>
+                <a href="#" id="exportJSON" type="submit">Export</a>
+            </div>
         </div>
-        
-    
-        <!-- Scripts -->
-        <script src="./dist/utils.js"></script>
-        <script src="./dist/TileMapEditor.js"></script>
-       
-        
+        <div class="info">
+            <p id="message"></p>
+        </div>
+        <div class="canvases">
+
+            <canvas class="tilemap-canvas"></canvas>
+            <canvas class="cell-grid-canvas"></canvas>
+            <canvas class="collision-canvas"></canvas>
+        </div>
+
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="./dist/utils.js"></script>
+    <script src="./dist/TileMapEditor.js"></script>
+
+
 </body>
+
 </html>
