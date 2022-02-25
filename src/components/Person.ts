@@ -74,9 +74,9 @@ export default class Person extends GameObject {
     if (behaviour.type === "stand") {
       this.isStanding = true;
       setTimeout(() => {
-        UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, { whoId: this.id });
+        this.isStanding = false;
+        UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, {whoId: this.id});
       }, behaviour.time!);
-      this.isStanding = false;
     }
   }
 
@@ -89,7 +89,7 @@ export default class Person extends GameObject {
 
     if (this.movingProgressRemaining === 0) {
       // emit done moving signal
-      UTILS.emitEvent(CUSTOM_EVENTS.PersonWalkComplete, { whoId: this.id });
+      UTILS.emitEvent(CUSTOM_EVENTS.PersonWalkComplete, {whoId: this.id});
     }
   }
 
