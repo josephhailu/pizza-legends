@@ -129,7 +129,7 @@ function MapEditor() {
     }
   };
 
-  const handleCollisionCanvasMouseDown = (canvasCoords: number[]) => {
+  const handleCollisionCanvasMouseEvent = (canvasCoords: number[]) => {
     setMouseEventDetails(
       `Mouse Coords: { x:  ${Math.floor(canvasCoords[0])}, y:  ${Math.floor(
         canvasCoords[1]
@@ -149,12 +149,14 @@ function MapEditor() {
       if (appState.walls[clickedWallKey] === true) {
         return;
       }
+      console.log("drawing!");
       newWalls[clickedWallKey] = true;
     } else {
       //only remove a wall that exists
       if (!appState.walls.hasOwnProperty(clickedWallKey)) {
         return;
       }
+      console.log("erasing!");
       delete newWalls[clickedWallKey];
     }
     setAppState((prevState) => {
@@ -193,6 +195,14 @@ function MapEditor() {
             <button onClick={handleExportClick} id="exportJSON">
               Export
             </button>
+            <button
+              onClick={() => setAppState((prev) => ({...prev, walls: {}}))}
+            >
+              Clear Cells
+            </button>
+            <button onClick={() => console.log({walls: appState.walls})}>
+              Log
+            </button>
           </StyledExport>
         </StyledControls>
         <StyledInfo>
@@ -203,7 +213,7 @@ function MapEditor() {
           cellSize={appState.cellSize}
           opacity={appState.opacity}
           walls={appState.walls}
-          handleCollisionCanvasMouseDown={handleCollisionCanvasMouseDown}
+          handleCollisionCanvasMouseEvent={handleCollisionCanvasMouseEvent}
           elementSize={appState.elementSize}
         />
       </StyledContainer>

@@ -17,7 +17,7 @@ export interface CanvasesType {
     width: number;
     height: number;
   };
-  handleCollisionCanvasMouseDown: (canvasCoords: number[]) => void;
+  handleCollisionCanvasMouseEvent: (canvasCoords: number[]) => void;
 }
 
 const Canvases = ({
@@ -26,8 +26,9 @@ const Canvases = ({
   opacity,
   walls,
   elementSize,
-  handleCollisionCanvasMouseDown,
+  handleCollisionCanvasMouseEvent,
 }: CanvasesType): JSX.Element => {
+  const [isMouseDown, setIsMouseDown] = React.useState<boolean>(false);
   const mapCanvas = React.useRef<HTMLCanvasElement>(null);
   const gridCanvas = React.useRef<HTMLCanvasElement>(null);
   const collisionCanvas = React.useRef<HTMLCanvasElement>(null);
@@ -47,18 +48,6 @@ const Canvases = ({
       throw new Error();
     }
   }
-
-  React.useEffect(() => {
-    //set canvas dimensions
-    [mapCanvas, gridCanvas, collisionCanvas].forEach((c) => {
-      c.current!.width = mapImage.width;
-      c.current!.height = mapImage.height;
-    });
-  }, [mapImage.src, mapImage.width, mapImage.height]);
-
-  React.useEffect(() => {
-    canvasDispatcher({type: "drawAll"});
-  });
 
   function drawMap() {
     const mapCtx = mapCanvas.current!.getContext("2d")!;
@@ -99,6 +88,19 @@ const Canvases = ({
     });
   }
 
+  React.useEffect(() => {
+    // set canvas dimensions when the img changes
+    [mapCanvas, gridCanvas, collisionCanvas].forEach((c) => {
+      c.current!.width = mapImage.width;
+      c.current!.height = mapImage.height;
+    });
+  }, [mapImage.src]);
+
+  // this effect needs to come last to re-draw canvases on each render
+  React.useEffect(() => {
+    // draw all the things
+    canvasDispatcher({type: "drawAll"});
+  });
   return (
     <StyledCanvases
       style={{height: elementSize.height, width: elementSize.width}}
@@ -113,9 +115,22 @@ const Canvases = ({
         className="collision-canvas"
         ref={collisionCanvas}
         onMouseDown={(e) => {
-          const rect = collisionCanvas.current!.getBoundingClientRect();
-          const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
-          handleCollisionCanvasMouseDown(canvasCoords);
+          // stop text highlighting
+          e.preventDefault();
+          setIsMouseDown(true);
+        }}
+        onMouseUp={() => {
+          setIsMouseDown(false);
+        }}
+        onMouseMove={(e) => {
+          if (isMouseDown) {
+            const rect = collisionCanvas.current!.getBoundingClientRect();
+            const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+            handleCollisionCanvasMouseEvent(canvasCoords);
+          }
+        }}
+        onMouseLeave={() => {
+          setIsMouseDown(false);
         }}
       />
     </StyledCanvases>

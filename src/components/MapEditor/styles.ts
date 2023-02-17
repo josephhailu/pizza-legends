@@ -7,7 +7,7 @@ export const StyledContainer = styled.div`
   flex-direction: column;
   align-items: center;
 
-  overflow-x:hidden;
+  overflow-x: hidden;
 `;
 export const StyledControls = styled.div`
   width: 80%;
@@ -41,6 +41,8 @@ export const StyledControl = styled.div`
   }
 `;
 export const StyledExport = styled.div`
+  display: flex;
+  gap: 15px;
   > button {
     padding: 5px;
     cursor: pointer;
