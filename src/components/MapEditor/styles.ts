@@ -58,12 +58,12 @@ export const StyledCanvases = styled.div`
   position: relative;
 `;
 
-export const StyledCanvas = styled.canvas`
+export const StyledCanvas = styled.canvas<{scaleFactor: number}>`
   position: absolute;
   left: 50%;
   image-rendering: pixelated;
 
-  transform: scale(3) translateX(-50%);
+  transform: scale(${(p) => p.scaleFactor}) translateX(-50%);
   transform-origin: top left;
   outline: 1px solid white;
 `;

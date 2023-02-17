@@ -29,7 +29,7 @@ export type MapEditorState = {
 
 function MapEditor() {
   const [appState, setAppState] = React.useState<MapEditorState>({
-    cssScaleFactor: 3,
+    cssScaleFactor: 3, // basically the zoom level
     imageProperties: "",
     isAddingTiles: true,
     isImageLoaded: false,
@@ -91,6 +91,15 @@ function MapEditor() {
       return {
         ...prevState,
         opacity: parseFloat(e.target.value),
+      };
+    });
+  };
+
+  const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        cssScaleFactor: e.target.valueAsNumber,
       };
     });
   };
@@ -179,7 +188,9 @@ function MapEditor() {
         <StyledControls>
           <FileUpload
             imageProperties={appState.imageProperties}
+            zoom={appState.cssScaleFactor}
             onFileChange={handleFileOnChange}
+            onZoomChange={handleZoomChange}
           />
           <CellGridOptions
             cellSize={appState.cellSize}
@@ -209,6 +220,7 @@ function MapEditor() {
           <p id="message">{mouseEventDetails}</p>
         </StyledInfo>
         <Canvases
+          scaleFactor={appState.cssScaleFactor}
           mapImage={mapImage}
           cellSize={appState.cellSize}
           opacity={appState.opacity}
@@ -223,10 +235,14 @@ function MapEditor() {
 
 export const FileUpload = ({
   imageProperties,
+  zoom,
   onFileChange,
+  onZoomChange,
 }: {
   imageProperties: string;
+  zoom: number;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onZoomChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }): JSX.Element => {
   return (
     <div>
@@ -242,7 +258,27 @@ export const FileUpload = ({
             onChange={onFileChange}
           />
         </div>
-        <p id="image-properties">{imageProperties}</p>
+        {imageProperties && (
+          <>
+            <div>
+              <label htmlFor="zoom">Zoom</label>
+              <input
+                type="range"
+                name="opacity"
+                id="opacity"
+                max="20"
+                min="1"
+                value={zoom}
+                step="1"
+                onChange={onZoomChange}
+              />
+            </div>
+            <div>
+              {" "}
+              <p id="image-properties">{imageProperties}</p>
+            </div>
+          </>
+        )}
       </StyledControl>
     </div>
   );

@@ -4,6 +4,7 @@ import {StyledCanvas, StyledCanvases} from "./styles";
 type CanvasDispatchTypes = "drawAll" | "drawGrid" | "drawMap" | "drawWalls";
 
 export interface CanvasesType {
+  scaleFactor: number;
   mapImage: HTMLImageElement;
   cellSize: {
     width: number;
@@ -21,6 +22,7 @@ export interface CanvasesType {
 }
 
 const Canvases = ({
+  scaleFactor,
   mapImage,
   cellSize,
   opacity,
@@ -111,28 +113,33 @@ const Canvases = ({
     <StyledCanvases
       style={{height: elementSize.height, width: elementSize.width}}
     >
-      <StyledCanvas className="tilemap-canvas" ref={mapCanvas} />
       <StyledCanvas
+        scaleFactor={scaleFactor}
+        className="tilemap-canvas"
+        ref={mapCanvas}
+      />
+      <StyledCanvas
+        scaleFactor={scaleFactor}
         className="cell-grid-canvas"
         ref={gridCanvas}
         style={{opacity: opacity}}
       />
       <StyledCanvas
+        scaleFactor={scaleFactor}
         className="collision-canvas"
         ref={collisionCanvas}
         onMouseDown={(e) => {
-          // stop text highlighting
-          e.preventDefault();
-          drawCell(e);
+          e.preventDefault(); // stop text highlighting when onMouseMove fires
+          drawCell(e); // allow us to draw when clicking
           setIsMouseDown(true);
-        }}
-        onMouseUp={() => {
-          setIsMouseDown(false);
         }}
         onMouseMove={(e) => {
           if (isMouseDown) {
             drawCell(e);
           }
+        }}
+        onMouseUp={() => {
+          setIsMouseDown(false);
         }}
         onMouseLeave={() => {
           setIsMouseDown(false);
