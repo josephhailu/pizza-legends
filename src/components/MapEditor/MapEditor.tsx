@@ -8,59 +8,86 @@ import {
   StyledInfo,
 } from "./styles";
 
+export type CanvasMode = "AddingTiles" | "RemovingTiles";
+
 export type MapEditorState = {
-  cssScaleFactor: number;
-  imageProperties: string;
-  isAddingTiles: boolean;
-  isImageLoaded: boolean;
-  cellSize: {
-    width: number;
-    height: number;
+  imageSettings: {
+    cssScaleFactor: number;
+    imageProperties: string;
+    isImageLoaded: boolean;
+    elementSize: {
+      width: number;
+      height: number;
+    };
   };
-  opacity: number;
+  canvasMode: CanvasMode;
+  gridSettings: {
+    opacity: number;
+    colorHeight: string;
+    colorWidth: string;
+  };
   walls: {
     [x: string]: boolean;
   };
-  elementSize: {
-    width: number;
-    height: number;
+  cellSettings: {
+    opacity: number;
+    color: string;
+    cellSize: {
+      width: number;
+      height: number;
+    };
   };
 };
 
 function MapEditor() {
   const [appState, setAppState] = React.useState<MapEditorState>({
-    cssScaleFactor: 3, // basically the zoom level
-    imageProperties: "",
-    isAddingTiles: true,
-    isImageLoaded: false,
-    cellSize: {width: 16, height: 16},
-    opacity: 0.5,
+    imageSettings: {
+      cssScaleFactor: 3, // basically the zoom level
+      imageProperties: "",
+      isImageLoaded: false,
+      elementSize: {width: 0, height: 0},
+    },
+    canvasMode: "AddingTiles",
+    gridSettings: {
+      opacity: 0.5,
+      colorHeight: "#0000FF",
+      colorWidth: "#FF7300",
+    },
     walls: {},
-    elementSize: {width: 0, height: 0},
+    cellSettings: {
+      opacity: 0.5,
+      color: "#0AE1C8",
+      cellSize: {width: 16, height: 16},
+    },
   });
+  const {cellSettings, gridSettings, imageSettings, canvasMode, walls} =
+    appState;
 
   const [mapImage] = React.useState(new Image());
   const [mouseEventDetails, setMouseEventDetails] = React.useState("");
 
   mapImage.onload = () => {
     let newSize = {
-      height: mapImage.height * appState.cssScaleFactor + 50,
-      width: mapImage.width * appState.cssScaleFactor + 50,
+      height: mapImage.height * imageSettings.cssScaleFactor + 50,
+      width: mapImage.width * imageSettings.cssScaleFactor + 50,
     };
     setAppState((prevState) => {
       return {
         ...prevState,
-        isAddingTiles: true,
-        isImageLoaded: true,
-        imageProperties: `Width :  ${mapImage.width}px Height: ${mapImage.height}px`,
+        imageSettings: {
+          ...prevState.imageSettings,
+          imageProperties: `Width :  ${mapImage.width}px Height: ${mapImage.height}px`,
+          isImageLoaded: true,
+          elementSize: newSize,
+        },
+        canvasMode: "AddingTiles",
         walls: {},
-        elementSize: newSize,
       };
     });
   };
 
   const handleFileOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files![0];
+    const selectedFile = e.target.files![0]!;
     const reader = new FileReader();
     reader.readAsDataURL(selectedFile);
 
@@ -76,21 +103,75 @@ function MapEditor() {
     setAppState((prevState) => {
       return {
         ...prevState,
-        cellSize: {
-          ...appState.cellSize,
-          [dimension]: parseInt(e.target.value),
+        cellSettings: {
+          ...prevState.cellSettings,
+          cellSize: {
+            ...prevState.cellSettings.cellSize,
+            [dimension]: parseInt(e.target.value),
+          },
         },
         walls: {},
-        isAddingTiles: true,
+        canvasMode: "AddingTiles",
       };
     });
   };
 
-  const handleOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleColorHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAppState((prevState) => {
       return {
         ...prevState,
-        opacity: parseFloat(e.target.value),
+        gridSettings: {
+          ...prevState.gridSettings,
+          colorHeight: e.target.value,
+        },
+      };
+    });
+  };
+
+  const handleColorWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        gridSettings: {
+          ...prevState.gridSettings,
+          colorWidth: e.target.value,
+        },
+      };
+    });
+  };
+
+  const handleCellColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        cellSettings: {
+          ...prevState.cellSettings,
+          color: e.target.value,
+        },
+      };
+    });
+  };
+
+  const handleCellOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        cellSettings: {
+          ...prevState.cellSettings,
+          opacity: parseFloat(e.target.value),
+        },
+      };
+    });
+  };
+
+  const handleGridOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        gridSettings: {
+          ...prevState.gridSettings,
+          opacity: parseFloat(e.target.value),
+        },
       };
     });
   };
@@ -99,7 +180,10 @@ function MapEditor() {
     setAppState((prevState) => {
       return {
         ...prevState,
-        cssScaleFactor: e.target.valueAsNumber,
+        imageSettings: {
+          ...prevState.imageSettings,
+          cssScaleFactor: e.target.valueAsNumber,
+        },
       };
     });
   };
@@ -108,7 +192,8 @@ function MapEditor() {
     setAppState((prevState) => {
       return {
         ...prevState,
-        isAddingTiles: e.target.value === "Add",
+        canvasMode:
+          e.target.value === "AddingTiles" ? "AddingTiles" : "RemovingTiles",
       };
     });
   };
@@ -138,7 +223,7 @@ function MapEditor() {
     }
   };
 
-  const handleCollisionCanvasMouseEvent = (canvasCoords: number[]) => {
+  const handleCollisionCanvasMouseEvent = (canvasCoords: [number, number]) => {
     setMouseEventDetails(
       `Mouse Coords: { x:  ${Math.floor(canvasCoords[0])}, y:  ${Math.floor(
         canvasCoords[1]
@@ -147,22 +232,22 @@ function MapEditor() {
     updateCollisionObject(canvasCoords);
   };
 
-  function updateCollisionObject(canvasCoords: number[]) {
+  function updateCollisionObject(canvasCoords: [number, number]) {
     const [cellX, cellY] = getCellCoords(canvasCoords);
-    const clickedWallKey = `${cellX * appState.cellSize.width},${
-      cellY * appState.cellSize.height
+    const clickedWallKey = `${cellX * cellSettings.cellSize.width},${
+      cellY * cellSettings.cellSize.height
     }`;
-    const newWalls = {...appState.walls};
-    if (appState.isAddingTiles) {
+    const newWalls = {...walls};
+    if (canvasMode === "AddingTiles") {
       //don't add a wall we already have
-      if (appState.walls[clickedWallKey] === true) {
+      if (walls[clickedWallKey] === true) {
         return;
       }
       console.log("drawing!");
       newWalls[clickedWallKey] = true;
     } else {
       //only remove a wall that exists
-      if (!appState.walls.hasOwnProperty(clickedWallKey)) {
+      if (!walls.hasOwnProperty(clickedWallKey)) {
         return;
       }
       console.log("erasing!");
@@ -176,10 +261,14 @@ function MapEditor() {
     });
   }
 
-  function getCellCoords([x, y]: number[]) {
+  function getCellCoords([x, y]: [number, number]): [number, number] {
     return [
-      Math.floor(x / appState.cssScaleFactor / appState.cellSize.width),
-      Math.floor(y / appState.cssScaleFactor / appState.cellSize.height),
+      Math.floor(
+        x / imageSettings.cssScaleFactor / cellSettings.cellSize.width
+      ),
+      Math.floor(
+        y / imageSettings.cssScaleFactor / cellSettings.cellSize.height
+      ),
     ];
   }
   return (
@@ -187,20 +276,28 @@ function MapEditor() {
       <StyledContainer>
         <StyledControls>
           <FileUpload
-            imageProperties={appState.imageProperties}
-            zoom={appState.cssScaleFactor}
+            imageProperties={imageSettings.imageProperties}
+            zoom={imageSettings.cssScaleFactor}
             onFileChange={handleFileOnChange}
             onZoomChange={handleZoomChange}
           />
           <CellGridOptions
-            cellSize={appState.cellSize}
-            opacity={appState.opacity}
+            cellSize={cellSettings.cellSize}
+            opacity={gridSettings.opacity}
+            colorHeight={gridSettings.colorHeight}
+            onColorHeightChange={handleColorHeightChange}
+            colorWidth={gridSettings.colorWidth}
+            onColorWidthChange={handleColorWidthChange}
             onCellSizeChange={handleCellSizeChange}
-            onOpacityChange={handleOpacityChange}
+            onOpacityChange={handleGridOpacityChange}
           />
           <CollisionRadioOptions
-            isAddingTiles={appState.isAddingTiles}
+            canvasMode={canvasMode}
             onRadioClick={handleRadioClick}
+            cellColor={cellSettings.color}
+            opacity={cellSettings.opacity}
+            onOpacityChange={handleCellOpacityChange}
+            onCellColorChange={handleCellColorChange}
           />
           <StyledExport>
             <button onClick={handleExportClick} id="exportJSON">
@@ -220,13 +317,15 @@ function MapEditor() {
           <p id="message">{mouseEventDetails}</p>
         </StyledInfo>
         <Canvases
-          scaleFactor={appState.cssScaleFactor}
+          scaleFactor={imageSettings.cssScaleFactor}
           mapImage={mapImage}
-          cellSize={appState.cellSize}
-          opacity={appState.opacity}
-          walls={appState.walls}
+          cellSize={cellSettings.cellSize}
+          cellColor={cellSettings.color}
+          opacity={cellSettings.opacity}
+          gridSettings={gridSettings}
+          walls={walls}
           handleCollisionCanvasMouseEvent={handleCollisionCanvasMouseEvent}
-          elementSize={appState.elementSize}
+          elementSize={imageSettings.elementSize}
         />
       </StyledContainer>
     </div>
@@ -289,6 +388,10 @@ export interface CellGridType {
     width: number;
     height: number;
   };
+  colorHeight: string;
+  onColorHeightChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  colorWidth: string;
+  onColorWidthChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   opacity: number;
   onCellSizeChange: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -300,6 +403,10 @@ export interface CellGridType {
 export const CellGridOptions = ({
   cellSize,
   opacity,
+  colorHeight,
+  colorWidth,
+  onColorHeightChange,
+  onColorWidthChange,
   onCellSizeChange,
   onOpacityChange,
 }: CellGridType): JSX.Element => {
@@ -322,6 +429,16 @@ export const CellGridOptions = ({
           />
         </div>
         <div>
+          <label htmlFor="color-width">Color</label>
+          <input
+            type="color"
+            name="color-width"
+            id="color-width"
+            value={colorWidth}
+            onChange={onColorWidthChange}
+          />
+        </div>
+        <div>
           <label htmlFor="height">Height</label>
           <input
             type="number"
@@ -336,11 +453,21 @@ export const CellGridOptions = ({
           />
         </div>
         <div>
-          <label htmlFor="opacity">Opacity</label>
+          <label htmlFor="color-height">Color</label>
+          <input
+            type="color"
+            name="color-height"
+            id="color-height"
+            value={colorHeight}
+            onChange={onColorHeightChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="grid-opacity">Opacity</label>
           <input
             type="range"
-            name="opacity"
-            id="opacity"
+            name="grid-opacity"
+            id="grid-opacity"
             max="1"
             min="0"
             value={opacity}
@@ -354,11 +481,19 @@ export const CellGridOptions = ({
 };
 
 export const CollisionRadioOptions = ({
-  isAddingTiles,
+  canvasMode,
+  cellColor,
+  opacity,
+  onCellColorChange,
   onRadioClick,
+  onOpacityChange,
 }: {
-  isAddingTiles: boolean;
+  canvasMode: CanvasMode;
+  cellColor: string;
+  opacity: number;
+  onCellColorChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRadioClick: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onOpacityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }): JSX.Element => {
   return (
     <StyledControl>
@@ -368,8 +503,8 @@ export const CollisionRadioOptions = ({
           type="radio"
           id="add"
           name="wall"
-          value="Add"
-          checked={isAddingTiles}
+          value="AddingTiles"
+          checked={canvasMode === "AddingTiles"}
           onChange={onRadioClick}
         />
       </div>
@@ -379,9 +514,32 @@ export const CollisionRadioOptions = ({
           type="radio"
           id="remove"
           name="wall"
-          value="Remove"
-          checked={!isAddingTiles}
+          value="RemovingTiles"
+          checked={canvasMode === "RemovingTiles"}
           onChange={onRadioClick}
+        />
+      </div>
+      <div>
+        <label htmlFor="color">Color</label>
+        <input
+          type="color"
+          name="color"
+          id="color"
+          value={cellColor}
+          onChange={onCellColorChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="opacity">Opacity</label>
+        <input
+          type="range"
+          name="opacity"
+          id="opacity"
+          max="1"
+          min="0"
+          value={opacity}
+          step="0.01"
+          onChange={onOpacityChange}
         />
       </div>
     </StyledControl>

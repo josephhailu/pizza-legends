@@ -6,8 +6,6 @@ export const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  overflow-x: hidden;
 `;
 export const StyledControls = styled.div`
   width: 80%;

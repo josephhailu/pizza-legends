@@ -1,4 +1,4 @@
-import { UTILS } from "./utils";
+import {UTILS} from "./utils";
 
 export type CanvasTypes =
   | "mapCanvas"
@@ -28,10 +28,10 @@ export default class TileMapEditor {
   imagePropertiesElement: HTMLParagraphElement;
   isImageLoaded: boolean = false;
 
-  cellSize: { width: number; height: number };
-  walls: { [x: string]: boolean };
+  cellSize: {width: number; height: number};
+  walls: {[x: string]: boolean};
 
-  constructor({ cssScaleFactor = 3 }: TileMapEditorConfig) {
+  constructor({cssScaleFactor = 3}: TileMapEditorConfig) {
     this.cssScaleFactor = cssScaleFactor;
     this.canvases = {
       mapCanvas: document.querySelector(".tilemap-canvas") as HTMLCanvasElement,
@@ -162,7 +162,7 @@ export default class TileMapEditor {
   private handleFile(e: Event) {
     this.selectedFile = (e.target as HTMLInputElement).files![0];
     const reader = new FileReader();
-    reader.readAsDataURL(this.selectedFile);
+    reader.readAsDataURL(this.selectedFile!);
 
     reader.onload = (_event) => {
       this.image.src = reader.result! as string;
@@ -184,21 +184,21 @@ export default class TileMapEditor {
 
   private updateMouseCoordMessage([x, y]: number[]) {
     this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
-      x
-    )}, y:  ${Math.floor(y)}}<br>Cell Coords: ${this.getCellCoords([x, y])}`;
+      x!
+    )}, y:  ${Math.floor(y!)}}<br>Cell Coords: ${this.getCellCoords([x!, y!])}`;
   }
 
   private updateCollisionObject(canvasCoords: number[]) {
     const [cellX, cellY] = this.getCellCoords(canvasCoords);
 
     if (this.isAddingTiles) {
-      if (this.walls[UTILS.asGridCoord(cellX, cellY)]) {
+      if (this.walls[UTILS.asGridCoord(cellX!, cellY!)]) {
         return;
       }
-      this.walls[UTILS.asGridCoord(cellX, cellY)] = true;
+      this.walls[UTILS.asGridCoord(cellX!, cellY!)] = true;
     } else {
       //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#description
-      delete this.walls[UTILS.asGridCoord(cellX, cellY)];
+      delete this.walls[UTILS.asGridCoord(cellX!, cellY!)];
     }
 
     this.draw(() => this.drawCollisionLayer());
@@ -206,8 +206,8 @@ export default class TileMapEditor {
 
   private getCellCoords([x, y]: number[]) {
     return [
-      Math.floor(x / this.cssScaleFactor / this.cellSize.width),
-      Math.floor(y / this.cssScaleFactor / this.cellSize.height),
+      Math.floor(x! / this.cssScaleFactor / this.cellSize.width),
+      Math.floor(y! / this.cssScaleFactor / this.cellSize.height),
     ];
   }
 
@@ -265,12 +265,12 @@ export default class TileMapEditor {
     collisionCtx.globalAlpha = 0.3;
     Object.keys(this.walls).forEach((key) => {
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
-      collisionCtx.fillRect(x, y, this.cellSize.width, this.cellSize.height);
+      collisionCtx.fillRect(x!, y!, this.cellSize.width, this.cellSize.height);
     });
   }
 }
 
 window.onload = function () {
-  const tme = new TileMapEditor({ cssScaleFactor: 3 });
+  const tme = new TileMapEditor({cssScaleFactor: 3});
   tme.init();
 };

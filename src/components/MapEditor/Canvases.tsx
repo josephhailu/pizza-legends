@@ -10,7 +10,13 @@ export interface CanvasesType {
     width: number;
     height: number;
   };
+  cellColor: string;
   opacity: number;
+  gridSettings: {
+    opacity: number;
+    colorHeight: string;
+    colorWidth: string;
+  };
   walls: {
     [x: string]: boolean;
   };
@@ -18,14 +24,16 @@ export interface CanvasesType {
     width: number;
     height: number;
   };
-  handleCollisionCanvasMouseEvent: (canvasCoords: number[]) => void;
+  handleCollisionCanvasMouseEvent: (canvasCoords: [number, number]) => void;
 }
 
 const Canvases = ({
   scaleFactor,
   mapImage,
   cellSize,
+  cellColor,
   opacity,
+  gridSettings,
   walls,
   elementSize,
   handleCollisionCanvasMouseEvent,
@@ -63,12 +71,12 @@ const Canvases = ({
     const height = mapCanvas.current!.height;
     cellGridCtx.clearRect(0, 0, width, height);
     // vertical lines
-    cellGridCtx.fillStyle = "blue";
+    cellGridCtx.fillStyle = gridSettings.colorHeight;
     for (let index = 1; index <= width / cellSize.width; index++) {
       cellGridCtx.fillRect(index * cellSize.width, 0, 1, height);
     }
     // horizontal lines
-    cellGridCtx.fillStyle = "orange";
+    cellGridCtx.fillStyle = gridSettings.colorWidth;
     for (let index = 1; index <= height / cellSize.height; index++) {
       cellGridCtx.fillRect(0, index * cellSize.height, width, 1);
     }
@@ -82,17 +90,20 @@ const Canvases = ({
       collisionCanvas.current!.width,
       collisionCanvas.current!.height
     );
-    collisionCtx.fillStyle = "green";
-    collisionCtx.globalAlpha = 0.3;
+    collisionCtx.fillStyle = cellColor;
+    collisionCtx.globalAlpha = opacity;
     Object.keys(walls).forEach((key) => {
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
-      collisionCtx.fillRect(x, y, cellSize.width, cellSize.height);
+      collisionCtx.fillRect(x!, y!, cellSize.width, cellSize.height);
     });
   }
 
   function drawCell(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     const rect = collisionCanvas.current!.getBoundingClientRect();
-    const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+    const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top] as [
+      number,
+      number
+    ];
     handleCollisionCanvasMouseEvent(canvasCoords);
   }
 
@@ -102,7 +113,7 @@ const Canvases = ({
       c.current!.width = mapImage.width;
       c.current!.height = mapImage.height;
     });
-  }, [mapImage.src]);
+  }, [mapImage.src, mapImage.height, mapImage.width]);
 
   // this effect needs to come last to re-draw canvases on each render
   React.useEffect(() => {
@@ -122,7 +133,7 @@ const Canvases = ({
         scaleFactor={scaleFactor}
         className="cell-grid-canvas"
         ref={gridCanvas}
-        style={{opacity: opacity}}
+        style={{opacity: gridSettings.opacity}}
       />
       <StyledCanvas
         scaleFactor={scaleFactor}
