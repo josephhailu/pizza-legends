@@ -88,6 +88,12 @@ const Canvases = ({
     });
   }
 
+  function drawCell(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    const rect = collisionCanvas.current!.getBoundingClientRect();
+    const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
+    handleCollisionCanvasMouseEvent(canvasCoords);
+  }
+
   React.useEffect(() => {
     // set canvas dimensions when the img changes
     [mapCanvas, gridCanvas, collisionCanvas].forEach((c) => {
@@ -117,6 +123,7 @@ const Canvases = ({
         onMouseDown={(e) => {
           // stop text highlighting
           e.preventDefault();
+          drawCell(e);
           setIsMouseDown(true);
         }}
         onMouseUp={() => {
@@ -124,9 +131,7 @@ const Canvases = ({
         }}
         onMouseMove={(e) => {
           if (isMouseDown) {
-            const rect = collisionCanvas.current!.getBoundingClientRect();
-            const canvasCoords = [e.clientX - rect.left, e.clientY - rect.top];
-            handleCollisionCanvasMouseEvent(canvasCoords);
+            drawCell(e);
           }
         }}
         onMouseLeave={() => {
