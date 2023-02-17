@@ -23,6 +23,17 @@ export default function PizzaLegends() {
     }
   }, []);
   // const [overworld, setOverworld] = useState<Overworld | null>(null);
+  const stableOverworldRef = useMemo(() => {
+    if (gameContainer && canvas) {
+      console.log("initing");
+      return new Overworld({
+        gameContainer,
+        canvas,
+      });
+    }
+    console.log("nulling");
+    return null;
+  }, [gameContainer, canvas]);
 
   // Init
   useEffect(() => {
@@ -50,18 +61,6 @@ export default function PizzaLegends() {
   //     }
   //   };
   // }, [overworld]);
-
-  const stableOverworldRef = useMemo(() => {
-    if (gameContainer && canvas) {
-      console.log("initing");
-      return new Overworld({
-        gameContainer,
-        canvas,
-      });
-    }
-    console.log("nulling");
-    return null;
-  }, [gameContainer, canvas]);
 
   // cleanup
   useEffect(() => {
