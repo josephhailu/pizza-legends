@@ -110,9 +110,14 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
     );
     collisionCtx.fillStyle = color;
     collisionCtx.globalAlpha = opacity;
-    Object.keys(walls).forEach((key) => {
+    Object.keys(walls).forEach((key, i) => {
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
-      collisionCtx.fillRect(x, y, cellSize.width, cellSize.height);
+      collisionCtx.fillRect(
+        x > 0 ? x + 1 : x - 1,
+        y > 0 ? y + 1 : y - 1,
+        x > 0 ? cellSize.width - 1 : cellSize.width + 1,
+        y > 0 ? cellSize.height - 1 : cellSize.height + 1
+      );
     });
   }
   function canvasDispatcher(action: {type: CanvasDispatchTypes}) {
