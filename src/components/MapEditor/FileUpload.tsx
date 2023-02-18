@@ -63,7 +63,6 @@ export const FileUpload: FC<PropsWithChildren<FileUploadProps>> = ({
               />
             </div>
             <div>
-              {" "}
               <p id="image-properties">{imageProperties}</p>
             </div>
           </>

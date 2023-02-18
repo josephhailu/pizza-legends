@@ -31,25 +31,16 @@ export const CellGridOptions: FC<PropsWithChildren<CellGridProps>> = ({
     });
   };
 
-  const handleColorHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleColorChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    dimension: "Height" | "Width"
+  ) => {
     setAppState((prevState) => {
       return {
         ...prevState,
         gridSettings: {
           ...prevState.gridSettings,
-          colorHeight: e.target.value,
-        },
-      };
-    });
-  };
-
-  const handleColorWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAppState((prevState) => {
-      return {
-        ...prevState,
-        gridSettings: {
-          ...prevState.gridSettings,
-          colorWidth: e.target.value,
+          [`color${dimension}`]: e.target.value,
         },
       };
     });
@@ -92,7 +83,9 @@ export const CellGridOptions: FC<PropsWithChildren<CellGridProps>> = ({
             name="color-width"
             id="color-width"
             value={colorWidth}
-            onChange={handleColorWidthChange}
+            onChange={(e) => {
+              handleColorChange(e, "Width");
+            }}
           />
         </div>
         <div>
@@ -116,7 +109,9 @@ export const CellGridOptions: FC<PropsWithChildren<CellGridProps>> = ({
             name="color-height"
             id="color-height"
             value={colorHeight}
-            onChange={handleColorHeightChange}
+            onChange={(e) => {
+              handleColorChange(e, "Height");
+            }}
           />
         </div>
         <div>
