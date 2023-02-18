@@ -8,7 +8,7 @@ export const FileUpload: FC<PropsWithChildren<FileUploadProps>> = ({
 }) => {
   const {
     mapImage,
-    imageSettings: {imageProperties, cssScaleFactor: zoom},
+    imageSettings: {cssScaleFactor: zoom},
   } = appState;
 
   const handleFileOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +33,7 @@ export const FileUpload: FC<PropsWithChildren<FileUploadProps>> = ({
       };
     });
   };
+  const showImageSettings = Boolean(mapImage.height && mapImage.width);
   return (
     <div>
       <h3>Image Properties:</h3>
@@ -47,14 +48,14 @@ export const FileUpload: FC<PropsWithChildren<FileUploadProps>> = ({
             onChange={handleFileOnChange}
           />
         </div>
-        {imageProperties && (
+        {showImageSettings && (
           <>
             <div>
               <label htmlFor="zoom">Zoom</label>
               <input
                 type="range"
-                name="opacity"
-                id="opacity"
+                name="zoom"
+                id="zoom"
                 max="20"
                 min="1"
                 value={zoom}
@@ -63,7 +64,7 @@ export const FileUpload: FC<PropsWithChildren<FileUploadProps>> = ({
               />
             </div>
             <div>
-              <p id="image-properties">{imageProperties}</p>
+              <p id="image-properties">{`Width :  ${mapImage.width}px Height: ${mapImage.height}px`}</p>
             </div>
           </>
         )}

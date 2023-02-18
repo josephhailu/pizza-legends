@@ -3,7 +3,6 @@ export type StyledCanvasProps = {scaleFactor: number};
 export type ImageSettings = {
   /** basically the zoom level of the image. Passed as variable to the styled component that wraps a canvas element */
   cssScaleFactor: number;
-  imageProperties: string;
   elementSize: {
     width: number;
     height: number;

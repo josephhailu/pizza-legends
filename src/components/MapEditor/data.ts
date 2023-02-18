@@ -18,7 +18,6 @@ export default class MapEditorState {
   constructor(config?: MapEditorStateConfig) {
     this.imageSettings = config?.imageSettings ?? {
       cssScaleFactor: 3,
-      imageProperties: "", 
       elementSize: {width: 0, height: 0},
     };
     this.canvasMode = config?.canvasMode ?? "AddingTiles";
