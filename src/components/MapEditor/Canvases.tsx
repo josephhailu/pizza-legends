@@ -20,7 +20,14 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
   const collisionCanvas = React.useRef<HTMLCanvasElement>(null);
 
   const [isMouseDown, setIsMouseDown] = React.useState<boolean>(false);
-  function updateCollisionObject(canvasCoords: [number, number]) {
+
+  function getCellCoords([x, y]: [number, number]): [number, number] {
+    return [
+      Math.floor(x / cssScaleFactor / cellSize.width),
+      Math.floor(y / cssScaleFactor / cellSize.height),
+    ];
+  }
+  const updateWallsAndMouseEventDetails = (canvasCoords: [number, number]) => {
     const [cellX, cellY] = getCellCoords(canvasCoords);
     const clickedWallKey = `${cellX * cellSize.width},${
       cellY * cellSize.height
@@ -42,27 +49,12 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
     setAppState((prevState) => {
       return {
         ...prevState,
-        walls: newWalls,
-      };
-    });
-  }
-
-  function getCellCoords([x, y]: [number, number]): [number, number] {
-    return [
-      Math.floor(x / cssScaleFactor / cellSize.width),
-      Math.floor(y / cssScaleFactor / cellSize.height),
-    ];
-  }
-  const handleCollisionCanvasMouseEvent = (canvasCoords: [number, number]) => {
-    updateCollisionObject(canvasCoords);
-    setAppState((prevState) => {
-      return {
-        ...prevState,
         mouseEventDetails: `Mouse Coords: { x:  ${Math.floor(
           canvasCoords[0]
         )}, y:  ${Math.floor(canvasCoords[1])}} Cell Coords: ${getCellCoords(
           canvasCoords
         )}`,
+        walls: newWalls,
       };
     });
   };
@@ -74,7 +66,7 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
       number,
       number
     ];
-    handleCollisionCanvasMouseEvent(canvasCoords);
+    updateWallsAndMouseEventDetails(canvasCoords);
   }
 
   function drawMap() {
