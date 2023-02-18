@@ -140,13 +140,13 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
   }
 
   React.useEffect(() => {
-    // set canvas dimensions when the img changes
+    // set canvas dimensions when the img dimensions changes
     [mapCanvas, gridCanvas, collisionCanvas].forEach((c) => {
       if (!c.current) return;
       c.current.width = mapImage.width;
       c.current.height = mapImage.height;
     });
-  }, [mapImage.src, mapImage.height, mapImage.width]);
+  }, [mapImage.height, mapImage.width]);
 
   React.useEffect(() => {
     // draw all the things

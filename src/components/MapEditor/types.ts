@@ -4,7 +4,6 @@ export type ImageSettings = {
   /** basically the zoom level of the image. Passed as variable to the styled component that wraps a canvas element */
   cssScaleFactor: number;
   imageProperties: string;
-  isImageLoaded: boolean;
   elementSize: {
     width: number;
     height: number;
