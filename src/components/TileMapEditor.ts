@@ -1,16 +1,11 @@
-import {UTILS} from "./utils";
+type CanvasTypes = "mapCanvas" | "cellGridCanvas" | "collisionGridCanvas";
+type Canvases = Record<CanvasTypes, HTMLCanvasElement>;
 
-export type CanvasTypes =
-  | "mapCanvas"
-  | "cellGridCanvas"
-  | "collisionGridCanvas";
-export type Canvases = Record<CanvasTypes, HTMLCanvasElement>;
-
-export interface TileMapEditorConfig {
+interface TileMapEditorConfig {
   cssScaleFactor: number;
 }
 
-export default class TileMapEditor {
+class TileMapEditor {
   cssScaleFactor: number;
 
   canvases: Canvases;
@@ -18,11 +13,13 @@ export default class TileMapEditor {
 
   selectedFile?: File;
   fileElement: HTMLInputElement;
+  imageOpacityElement: HTMLInputElement;
 
   widthElement: HTMLInputElement;
   heightElement: HTMLInputElement;
-  opacityElement: HTMLInputElement;
+  gridOpacityElement: HTMLInputElement;
   messageElement: HTMLParagraphElement;
+  canvasDiv: HTMLDivElement;
 
   image: HTMLImageElement;
   imagePropertiesElement: HTMLParagraphElement;
@@ -44,12 +41,16 @@ export default class TileMapEditor {
     };
 
     this.fileElement = document.querySelector("#upload") as HTMLInputElement;
+    this.imageOpacityElement = document.querySelector(
+      "#imageOpacity"
+    ) as HTMLInputElement;
+
     this.imagePropertiesElement = document.querySelector(
       "#image-properties"
     ) as HTMLParagraphElement;
     this.widthElement = document.querySelector("#width") as HTMLInputElement;
     this.heightElement = document.querySelector("#height") as HTMLInputElement;
-    this.opacityElement = document.querySelector(
+    this.gridOpacityElement = document.querySelector(
       "#opacity"
     ) as HTMLInputElement;
 
@@ -57,6 +58,7 @@ export default class TileMapEditor {
       "#message"
     ) as HTMLInputElement;
 
+    this.canvasDiv = document.querySelector(".canvases")! as HTMLDivElement;
     this.image = new Image();
 
     this.image.onload = () => {
@@ -67,6 +69,13 @@ export default class TileMapEditor {
       });
 
       this.imagePropertiesElement.innerText = `Width :  ${this.image.width}px Height: ${this.image.height}px`;
+      //set height/wdith of canvas parent div with some padding when image changes
+      this.canvasDiv.style.height = `${
+        this.image.height * this.cssScaleFactor + 40
+      }px`;
+      this.canvasDiv.style.width = `${
+        this.image.width * this.cssScaleFactor + 40
+      }px`;
       this.walls = {};
 
       this.draw();
@@ -84,11 +93,20 @@ export default class TileMapEditor {
     this.walls = {};
   }
 
-  init() {
+  initEventListeners() {
     //listener for file load
     this.fileElement.addEventListener(
       "change",
       (e) => this.handleFile(e),
+      false
+    );
+    //listener for image opacity
+    this.imageOpacityElement.addEventListener(
+      "change",
+      (e) =>
+        (this.canvases.mapCanvas.style.opacity = (
+          e.target! as HTMLInputElement
+        ).value),
       false
     );
 
@@ -104,8 +122,8 @@ export default class TileMapEditor {
       false
     );
 
-    //listener for opacity
-    this.opacityElement.addEventListener(
+    //listener for grid opacity
+    this.gridOpacityElement.addEventListener(
       "change",
       (e) =>
         (this.canvases.cellGridCanvas.style.opacity = (
@@ -162,7 +180,7 @@ export default class TileMapEditor {
   private handleFile(e: Event) {
     this.selectedFile = (e.target as HTMLInputElement).files![0];
     const reader = new FileReader();
-    reader.readAsDataURL(this.selectedFile!);
+    reader.readAsDataURL(this.selectedFile);
 
     reader.onload = (_event) => {
       this.image.src = reader.result! as string;
@@ -184,21 +202,23 @@ export default class TileMapEditor {
 
   private updateMouseCoordMessage([x, y]: number[]) {
     this.messageElement.innerHTML = `Mouse Coords: { x:  ${Math.floor(
-      x!
-    )}, y:  ${Math.floor(y!)}}<br>Cell Coords: ${this.getCellCoords([x!, y!])}`;
+      x
+    )}, y:  ${Math.floor(y)}}<br>Cell Coords: ${this.getCellCoords([x, y])}`;
   }
 
   private updateCollisionObject(canvasCoords: number[]) {
     const [cellX, cellY] = this.getCellCoords(canvasCoords);
-
+    const cellKey = `${cellX * this.cellSize.width},${
+      cellY * this.cellSize.height
+    }`;
     if (this.isAddingTiles) {
-      if (this.walls[UTILS.asGridCoord(cellX!, cellY!)]) {
+      if (this.walls[cellKey]) {
         return;
       }
-      this.walls[UTILS.asGridCoord(cellX!, cellY!)] = true;
+      this.walls[cellKey] = true;
     } else {
       //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete#description
-      delete this.walls[UTILS.asGridCoord(cellX!, cellY!)];
+      delete this.walls[cellKey];
     }
 
     this.draw(() => this.drawCollisionLayer());
@@ -206,8 +226,8 @@ export default class TileMapEditor {
 
   private getCellCoords([x, y]: number[]) {
     return [
-      Math.floor(x! / this.cssScaleFactor / this.cellSize.width),
-      Math.floor(y! / this.cssScaleFactor / this.cellSize.height),
+      Math.floor(x / this.cssScaleFactor / this.cellSize.width),
+      Math.floor(y / this.cssScaleFactor / this.cellSize.height),
     ];
   }
 
@@ -265,12 +285,12 @@ export default class TileMapEditor {
     collisionCtx.globalAlpha = 0.3;
     Object.keys(this.walls).forEach((key) => {
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
-      collisionCtx.fillRect(x!, y!, this.cellSize.width, this.cellSize.height);
+      collisionCtx.fillRect(x, y, this.cellSize.width, this.cellSize.height);
     });
   }
 }
 
 window.onload = function () {
   const tme = new TileMapEditor({cssScaleFactor: 3});
-  tme.init();
+  tme.initEventListeners();
 };
