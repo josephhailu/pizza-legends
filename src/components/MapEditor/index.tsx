@@ -11,8 +11,7 @@ export const defaultAppState: MapEditorStateConfig = {
   mapImage: new Image(),
   mouseEventDetails: "",
   imageSettings: {
-    cssScaleFactor: 3,
-    imageProperties: "",
+    cssScaleFactor: 3, 
     elementSize: {width: 0, height: 0},
   },
   canvasMode: "AddingTiles",
@@ -48,7 +47,6 @@ function MapEditor() {
         ...prevState,
         imageSettings: {
           ...prevState.imageSettings,
-          imageProperties: `Width :  ${mapImage.width}px Height: ${mapImage.height}px`,
           elementSize: newSize,
         },
         canvasMode: "AddingTiles",

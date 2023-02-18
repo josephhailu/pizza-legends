@@ -60,7 +60,7 @@ export const CellGridOptions: FC<PropsWithChildren<CellGridProps>> = ({
 
   return (
     <div>
-      <h3>Cell Grid Size (pixels):</h3>
+      <h3>Cell Grid </h3>
       <StyledControl>
         <div>
           <label htmlFor="width">Width</label>
