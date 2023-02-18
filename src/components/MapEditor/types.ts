@@ -31,6 +31,8 @@ export type Walls = {
 };
 
 export type MapEditorStateConfig = {
+  mapImage: HTMLImageElement;
+  mouseEventDetails: string;
   imageSettings: ImageSettings;
   canvasMode: CanvasMode;
   gridSettings: GridSettings;
@@ -43,9 +45,7 @@ export interface MapEditorComponentProps {
   setAppState: React.Dispatch<React.SetStateAction<MapEditorStateConfig>>;
 }
 
-export interface FileUploadProps extends MapEditorComponentProps {
-  mapImage: HTMLImageElement;
-}
+export interface FileUploadProps extends MapEditorComponentProps {}
 
 export interface CellGridProps extends MapEditorComponentProps {}
 
@@ -57,7 +57,4 @@ export type CanvasDispatchTypes =
   | "drawMap"
   | "drawWalls";
 
-export interface CanvasesType extends MapEditorComponentProps {
-  mapImage: HTMLImageElement;
-  setMouseEventDetails: React.Dispatch<React.SetStateAction<string>>;
-}
+export interface CanvasesType extends MapEditorComponentProps {}

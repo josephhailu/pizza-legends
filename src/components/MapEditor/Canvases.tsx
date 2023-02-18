@@ -4,11 +4,10 @@ import {CanvasDispatchTypes, CanvasesType} from "./types";
 
 const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
   appState,
-  mapImage,
   setAppState,
-  setMouseEventDetails,
 }) => {
   const {
+    mapImage,
     canvasMode,
     imageSettings: {elementSize, cssScaleFactor},
     gridSettings: {opacity: gridOpacity, colorHeight, colorWidth},
@@ -55,12 +54,17 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
     ];
   }
   const handleCollisionCanvasMouseEvent = (canvasCoords: [number, number]) => {
-    setMouseEventDetails(
-      `Mouse Coords: { x:  ${Math.floor(canvasCoords[0])}, y:  ${Math.floor(
-        canvasCoords[1]
-      )}} Cell Coords: ${getCellCoords(canvasCoords)}`
-    );
     updateCollisionObject(canvasCoords);
+    setAppState((prevState) => {
+      return {
+        ...prevState,
+        mouseEventDetails: `Mouse Coords: { x:  ${Math.floor(
+          canvasCoords[0]
+        )}, y:  ${Math.floor(canvasCoords[1])}} Cell Coords: ${getCellCoords(
+          canvasCoords
+        )}`,
+      };
+    });
   };
 
   function drawCell(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {

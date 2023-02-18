@@ -3,12 +3,12 @@ import {StyledControl} from "./styles";
 import {FileUploadProps} from "./types";
 
 export const FileUpload: FC<PropsWithChildren<FileUploadProps>> = ({
-  mapImage,
   appState,
   setAppState,
 }) => {
   const {
-    imageSettings: {imageProperties, cssScaleFactor: zoom, },
+    mapImage,
+    imageSettings: {imageProperties, cssScaleFactor: zoom},
   } = appState;
 
   const handleFileOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
