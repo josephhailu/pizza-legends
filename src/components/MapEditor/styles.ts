@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import {StyledCanvasProps} from "./types";
 
 export const StyledContainer = styled.div`
   position: relative;
@@ -56,7 +57,7 @@ export const StyledCanvases = styled.div`
   position: relative;
 `;
 
-export const StyledCanvas = styled.canvas<{scaleFactor: number}>`
+export const StyledCanvas = styled.canvas<StyledCanvasProps>`
   position: absolute;
   left: 50%;
   image-rendering: pixelated;

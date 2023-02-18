@@ -1,5 +1,5 @@
 import React from "react";
-import MapEditor from "../components/MapEditor/MapEditor";
+import MapEditor from "../components/MapEditor";
 
 export default function Edit() {
   return (
