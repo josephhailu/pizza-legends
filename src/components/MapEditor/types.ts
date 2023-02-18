@@ -50,6 +50,8 @@ export interface CellGridProps extends MapEditorComponentProps {}
 
 export interface CollisionCanvasOptionsProps extends MapEditorComponentProps {}
 
+export interface JSONExportProps extends MapEditorComponentProps {}
+
 export type CanvasDispatchTypes =
   | "drawAll"
   | "drawGrid"

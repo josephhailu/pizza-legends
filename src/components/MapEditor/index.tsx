@@ -1,15 +1,11 @@
 import React from "react";
 import Canvases from "./Canvases";
-import {
-  StyledContainer,
-  StyledControls,
-  StyledExport,
-  StyledInfo,
-} from "./styles";
+import {StyledContainer, StyledControls, StyledInfo} from "./styles";
 import {MapEditorStateConfig} from "./types";
 import CellGridOptions from "./CellGridOptions";
 import CollisionCanvasOptions from "./CollisionCanvasOptions";
 import FileUpload from "./FileUpload";
+import JSONExport from "./JSONExport";
 
 export const defaultAppState: MapEditorStateConfig = {
   mapImage: new Image(),
@@ -61,31 +57,6 @@ function MapEditor() {
     });
   };
 
-  const handleExportClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-    if (Object.keys(appState.walls).length > 0) {
-      const a = document.createElement("a");
-
-      a.download = "walls.json";
-      a.href = window.URL.createObjectURL(
-        new Blob([JSON.stringify(appState.walls)], {
-          type: "text/json",
-        })
-      );
-
-      a.dispatchEvent(
-        new MouseEvent("click", {
-          view: window,
-          bubbles: true,
-          cancelable: true,
-        })
-      );
-      a.remove();
-    }
-  };
-
   return (
     <div className="App">
       <StyledContainer>
@@ -96,19 +67,7 @@ function MapEditor() {
             appState={appState}
             setAppState={setAppState}
           />
-          <StyledExport>
-            <button onClick={handleExportClick} id="exportJSON">
-              Export
-            </button>
-            <button
-              onClick={() => setAppState((prev) => ({...prev, walls: {}}))}
-            >
-              Clear Cells
-            </button>
-            <button onClick={() => console.log({walls: appState.walls})}>
-              Log
-            </button>
-          </StyledExport>
+          <JSONExport appState={appState} setAppState={setAppState} />
         </StyledControls>
         <StyledInfo>
           <p id="message">{mouseEventDetails}</p>
