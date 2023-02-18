@@ -1,4 +1,4 @@
-class KeyPressListener {
+export default class KeyPressListener {
   keyDownFunction: (event: KeyboardEvent) => void;
   keyUpFunction: (event: KeyboardEvent) => void;
   constructor(keyCode: string, callback: () => void) {

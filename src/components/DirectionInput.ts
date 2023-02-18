@@ -1,10 +1,12 @@
-type WASDmap = "KeyW" | "KeyS" | "KeyA" | "KeyD";
-type ArrowsMap = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
-type KeyMap = {
+import { Directions } from "./Person";
+
+export type WASDmap = "KeyW" | "KeyS" | "KeyA" | "KeyD";
+export type ArrowsMap = "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight";
+export type KeyMap = {
   [key in WASDmap | ArrowsMap]: Directions;
 };
 
-class DirectionInput {
+export default class DirectionInput {
   heldDirection: Directions[];
   map: KeyMap;
   constructor() {

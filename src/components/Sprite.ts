@@ -1,4 +1,7 @@
-type SpriteConfig = {
+import GameObject from "./GameObject";
+import { ANIMATIONS, UTILS, DIMENSIONS } from "./utils";
+
+export type SpriteConfig = {
   animation?: {
     [key: string]: number[][];
   };
@@ -10,7 +13,7 @@ type SpriteConfig = {
   animationFrameLimit?: number;
 };
 
-class Sprite {
+export default class Sprite {
   animation: {
     [key: string]: number[][];
   };

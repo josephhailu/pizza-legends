@@ -1,4 +1,7 @@
-type CanvasTypes = "mapCanvas" | "cellGridCanvas" | "collisionGridCanvas";
+export type CanvasTypes =
+  | "mapCanvas"
+  | "cellGridCanvas"
+  | "collisionGridCanvas";
 type Canvases = Record<CanvasTypes, HTMLCanvasElement>;
 
 interface TileMapEditorConfig {

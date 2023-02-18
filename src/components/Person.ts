@@ -1,17 +1,22 @@
-type PersonConfig = GameObjectConfig & {
+import { CUSTOM_EVENTS } from "./CustomEvent";
+import GameObject, { GameObjectConfig, Behaviour } from "./GameObject";
+import OverworldMap from "./OverworldMap";
+import { UTILS } from "./utils";
+
+export type PersonConfig = GameObjectConfig & {
   isPlayerControlled?: boolean;
 };
-type Directions = "up" | "down" | "left" | "right";
-type DirectionUpdate = {
+export type Directions = "up" | "down" | "left" | "right";
+export type DirectionUpdate = {
   [key in Directions]: [property: "x" | "y", change: -1 | 1];
 };
 
-type SpriteUpdateState = {
+export type SpriteUpdateState = {
   map: OverworldMap;
   arrow?: Directions;
 };
 
-class Person extends GameObject {
+export default class Person extends GameObject {
   movingProgressRemaining: number;
   isStanding = false;
   directionUpdate: DirectionUpdate;
@@ -69,9 +74,9 @@ class Person extends GameObject {
     if (behaviour.type === "stand") {
       this.isStanding = true;
       setTimeout(() => {
-        UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, { whoId: this.id });
+        this.isStanding = false;
+        UTILS.emitEvent(CUSTOM_EVENTS.PersonStandComplete, {whoId: this.id});
       }, behaviour.time!);
-      this.isStanding = false;
     }
   }
 
@@ -82,9 +87,9 @@ class Person extends GameObject {
       this.movingProgressRemaining -= 1;
     }
 
-    if (this.movingProgressRemaining == 0) {
+    if (this.movingProgressRemaining === 0) {
       // emit done moving signal
-      UTILS.emitEvent(CUSTOM_EVENTS.PersonWalkComplete, { whoId: this.id });
+      UTILS.emitEvent(CUSTOM_EVENTS.PersonWalkComplete, {whoId: this.id});
     }
   }
 

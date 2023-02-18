@@ -1,5 +1,10 @@
-type EventTypes = "walk" | "stand" | "textMessage" | "changeMap";
-type Behaviour = {
+import OverworldEvent from "./OverworldEvent";
+import OverworldMap from "./OverworldMap";
+import { Directions } from "./Person";
+import Sprite from "./Sprite";
+
+export type EventTypes = "walk" | "stand" | "textMessage" | "changeMap";
+export type Behaviour = {
   type: EventTypes;
   direction?: Directions;
   time?: number;
@@ -10,7 +15,7 @@ type Behaviour = {
   map?: string;
 };
 
-type GameObjectConfig = {
+export type GameObjectConfig = {
   x: number;
   y: number;
   direction?: Directions;
@@ -22,7 +27,7 @@ type GameObjectConfig = {
   talking?: Record<string, Behaviour[]>[];
 };
 
-class GameObject {
+export default class GameObject {
   y: number;
   x: number;
   isMounted: boolean;

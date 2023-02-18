@@ -1,34 +1,17 @@
-enum CUSTOM_EVENTS {
-  PersonWalkComplete = "PersonWalkComplete",
-  PersonStandComplete = "PersonStandComplete",
-}
+import { CUSTOM_EVENTS } from "./CustomEvent";
+import { Behaviour } from "./GameObject";
+import OverworldMap from "./OverworldMap";
+import { OverworldMapsConfig } from "./OverworldMapsConfig";
+import Person from "./Person";
+import TextMessage from "./TextMessage";
+import { UTILS } from "./utils";
 
-interface CustomEventMap {
-  PersonWalkComplete: CustomEvent<{whoId: string}>;
-  PersonStandComplete: CustomEvent<{whoId: string}>;
-}
-
-declare module "custom-events" {
-  global {
-    interface Document {
-      addEventListener<K extends keyof CustomEventMap>(
-        type: K,
-        listener: (this: Document, ev: CustomEventMap[K]) => void
-      ): void;
-      removeEventListener<K extends keyof CustomEventMap>(
-        type: K,
-        listener: (this: Document, ev: CustomEventMap[K]) => void
-      ): void;
-    }
-  }
-}
-
-type OverworldEventConfig = {
+export type OverworldEventConfig = {
   map: OverworldMap;
   event: Behaviour;
 };
 
-class OverworldEvent {
+export default class OverworldEvent {
   map: OverworldMap;
   event: Behaviour;
   constructor(config: OverworldEventConfig) {
@@ -40,7 +23,7 @@ class OverworldEvent {
     const who = this.map.gameObjects[this.event.who!];
     if (who instanceof Person) {
       who.startBehaviour(
-        {map: this.map},
+        { map: this.map },
         {
           type: "stand",
           direction: this.event.direction,
@@ -48,7 +31,7 @@ class OverworldEvent {
         }
       );
 
-      const completeHandler = (event: CustomEvent<{whoId: string}>) => {
+      const completeHandler = (event: CustomEvent<{ whoId: string }>) => {
         if (event.detail.whoId === this.event.who!) {
           document.removeEventListener(
             CUSTOM_EVENTS.PersonStandComplete,
@@ -69,7 +52,7 @@ class OverworldEvent {
     const who = this.map.gameObjects[this.event.who!];
     if (who instanceof Person) {
       who.startBehaviour(
-        {map: this.map},
+        { map: this.map },
         {
           type: "walk",
           direction: this.event.direction,
@@ -77,7 +60,7 @@ class OverworldEvent {
         }
       );
 
-      const completeHandler = (event: CustomEvent<{whoId: string}>) => {
+      const completeHandler = (event: CustomEvent<{ whoId: string }>) => {
         if (event.detail.whoId === this.event.who!) {
           document.removeEventListener(
             CUSTOM_EVENTS.PersonWalkComplete,
@@ -109,7 +92,7 @@ class OverworldEvent {
   }
 
   changeMap(resolve: (value: unknown) => void) {
-    this.map.overworld!.startMap(window.OverworldMaps[this.event.map!]);
+    this.map.overworld!.startMap(OverworldMapsConfig[this.event.map!]);
     resolve(true);
   }
 

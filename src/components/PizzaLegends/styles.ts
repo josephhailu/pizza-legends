@@ -1,9 +1,8 @@
-body {
-  background-color: #333;
-  overflow: hidden;
-}
+import styled from "styled-components";
 
-.game-container {
+export const StyledGameContainer = styled.div`
+  overflow: hidden;
+
   position: relative;
   margin: 20px auto 0 auto;
   outline: 1px solid white;
@@ -12,8 +11,8 @@ body {
 
   /*scale assets, push image down to compensate*/
   transform: scale(3) translateY(50%);
-}
 
-.game-container canvas {
-  image-rendering: pixelated;
-}
+  > canvas {
+    image-rendering: pixelated;
+  }
+`;
