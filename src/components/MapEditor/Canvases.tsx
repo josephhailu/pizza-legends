@@ -92,6 +92,7 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
     if (!cellGridCtx) return;
     const width = mapCanvas.current.width;
     const height = mapCanvas.current.height;
+    cellGridCtx.globalAlpha = gridOpacity;
     cellGridCtx.clearRect(0, 0, width, height);
     // vertical lines
     cellGridCtx.fillStyle = colorHeight;
@@ -165,7 +166,6 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
         scaleFactor={cssScaleFactor}
         className="cell-grid-canvas"
         ref={gridCanvas}
-        style={{opacity: gridOpacity}}
       />
       <StyledCanvas
         scaleFactor={cssScaleFactor}
