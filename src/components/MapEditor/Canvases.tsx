@@ -33,17 +33,14 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
       cellY * cellSize.height
     }`;
     const newWalls = {...walls};
-    if (canvasMode === "AddingTiles") {
+    if (canvasMode === "AddingTiles" && !walls[clickedWallKey]) {
       //don't add a wall we already have
-      if (walls[clickedWallKey] === true) {
-        return;
-      }
       newWalls[clickedWallKey] = true;
-    } else {
+    } else if (
+      canvasMode === "RemovingTiles" &&
+      walls.hasOwnProperty(clickedWallKey)
+    ) {
       //only remove a wall that exists
-      if (!walls.hasOwnProperty(clickedWallKey)) {
-        return;
-      }
       delete newWalls[clickedWallKey];
     }
     setAppState((prevState) => {
@@ -71,7 +68,7 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
 
   function drawMap() {
     if (!mapCanvas.current) return;
-    const mapCtx = mapCanvas.current.getContext("2d");
+    const mapCtx = mapCanvas?.current.getContext("2d");
     if (!mapCtx) return;
 
     mapCtx.clearRect(0, 0, mapCanvas.current.width, mapCanvas.current.height);
@@ -110,7 +107,7 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
     );
     collisionCtx.fillStyle = color;
     collisionCtx.globalAlpha = opacity;
-    Object.keys(walls).forEach((key, i) => {
+    Object.keys(walls).forEach((key) => {
       const [x, y] = key.split(",").map((n) => parseInt(n)); //{"16,0": true}
       collisionCtx.fillRect(
         x > 0 ? x + 1 : x - 1,
@@ -122,7 +119,6 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
   }
   function canvasDispatcher(action: {type: CanvasDispatchTypes}) {
     if (action.type === "drawAll") {
-      console.log("drawing!");
       drawMap();
       drawGrid();
       drawWalls();
@@ -170,8 +166,8 @@ const Canvases: FC<PropsWithChildren<CanvasesType>> = ({
         ref={collisionCanvas}
         onMouseDown={(e) => {
           e.preventDefault(); // stop text highlighting when onMouseMove fires
-          drawCell(e); // allow us to also draw when just clicking
           setIsMouseDown(true);
+          drawCell(e); // allow us to also draw when just clicking
         }}
         onMouseMove={(e) => {
           if (isMouseDown) {
